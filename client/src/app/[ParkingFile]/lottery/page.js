@@ -78,7 +78,7 @@ const LotteryPage = () => {
     const winnerIds = winners.map((winner) => winner.student_id);
 
     try {
-      const response = await fetch("http://localhost:5000/documents/update-winners", {
+      const response = await fetch("https://bs-fse-2025-team9.onrender.com/documents/update-winners", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ const LotteryPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        alert(`Winners updated successfully! ${data.updatedCount} documents updated.`);
+        alert(`Winners updated successfully12!`);
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.message}`);
