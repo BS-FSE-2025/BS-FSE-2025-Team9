@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% block title %}Department Head Dashboard - Request Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>Department Head Dashboard</h1>
+            <div class="header-actions">
+                <span class="user-info" id="userInfo">Loading...</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <a href="#pending" class="nav-item active" data-section="pending">Pending Requests</a>
+        <a href="#approved" class="nav-item" data-section="approved">Approved</a>
+        <a href="#rejected" class="nav-item" data-section="rejected">Rejected</a>
+    </nav>
+
+    <main class="dashboard-main">
+        <!-- Statistics Section -->
+        <div class="statistics-section">
+            <h2>Request Statistics</h2>
+            <div id="statisticsContainer" class="statistics-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Loading...</div>
+                    <div class="stat-value">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <h2>Pending Approval Requests</h2>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filterDateFrom">From Date:</label>
+                    <input type="date" id="filterDateFrom" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label for="filterDateTo">To Date:</label>
+                    <input type="date" id="filterDateTo" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label for="filterType">Request Type:</label>
+                    <select id="filterType" class="filter-input">
+                        <option value="">All Types</option>
+                        <option value="Study Approval">Study Approval</option>
+                        <option value="Appeal">Appeal</option>
+                        <option value="Postponement">Postponement</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+                <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+                <button id="clearFilters" class="btn btn-secondary">Clear</button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading requests...</p>
+        </div>
+
+        <!-- Requests List -->
+        <div id="requestsContainer" class="requests-container">
+            <!-- Requests will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>No pending requests found.</p>
+        </div>
+    </main>
+</div>
+
+<!-- Request Detail Modal -->
+<div id="requestModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modalBody">
+            <!-- Request details will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+let currentFilters = {};
+
+// Load user info
+async function loadUserInfo() {
+    try {
+        const response = await fetch('/api/head/pending-requests');
+        if (response.ok) {
+            const user = { name: 'Department Head' };
+            document.getElementById('userInfo').textContent = user.name;
+        }
+    } catch (error) {
+        console.error('Error loading user info:', error);
+    }
+}
+
+// Load pending requests
+async function loadPendingRequests() {
+    const container = document.getElementById('requestsContainer');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const emptyState = document.getElementById('emptyState');
+    
+    loadingIndicator.style.display = 'block';
+    container.innerHTML = '';
+    emptyState.style.display = 'none';
+    
+    try {
+        const params = new URLSearchParams();
+        if (currentFilters.date_from) params.append('date_from', currentFilters.date_from);
+        if (currentFilters.date_to) params.append('date_to', currentFilters.date_to);
+        if (currentFilters.request_type) params.append('request_type', currentFilters.request_type);
+        
+        const response = await fetch(`/api/head/pending-requests?${params.toString()}`);
+        const data = await response.json();
+        
+        loadingIndicator.style.display = 'none';
+        
+        if (data.success && data.requests.length > 0) {
+            data.requests.forEach(request => {
+                const requestCard = createRequestCard(request);
+                container.appendChild(requestCard);
+            });
+        } else {
+            emptyState.style.display = 'block';
+        }
+    } catch (error) {
+        loadingIndicator.style.display = 'none';
+        container.innerHTML = '<div class="error-message">Error loading requests. Please try again.</div>';
+        console.error('Error loading requests:', error);
+    }
+}
+
+// Create request card
+function createRequestCard(request) {
+    const card = document.createElement('div');
+    card.className = 'request-card';
+    card.dataset.requestId = request.id;
+    
+    const priorityClass = `priority-${request.priority}`;
+    const createdDate = new Date(request.created_at).toLocaleDateString();
+    
+    card.innerHTML = `
+        <div class="request-header">
+            <div class="request-title-section">
+                <h3>${escapeHtml(request.title)}</h3>
+                <span class="request-type">${escapeHtml(request.request_type)}</span>
+            </div>
+            <span class="priority-badge ${priorityClass}">${request.priority.toUpperCase()}</span>
+        </div>
+        <div class="request-body">
+            <p class="request-description">${escapeHtml(request.description)}</p>
+            <div class="request-meta">
+                <span><strong>Student:</strong> ${escapeHtml(request.student_name || 'N/A')}</span>
+                <span><strong>Created:</strong> ${createdDate}</span>
+            </div>
+        </div>
+        <div class="request-actions">
+            <button class="btn btn-success btn-approve" data-request-id="${request.id}">Approve</button>
+            <button class="btn btn-danger btn-reject" data-request-id="${request.id}">Reject</button>
+            <button class="btn btn-info btn-view" data-request-id="${request.id}">View Details</button>
+        </div>
+    `;
+    
+    // Add event listeners
+    card.querySelector('.btn-approve').addEventListener('click', () => handleApproveReject(request.id, 'approve'));
+    card.querySelector('.btn-reject').addEventListener('click', () => handleApproveReject(request.id, 'reject'));
+    card.querySelector('.btn-view').addEventListener('click', () => viewRequestDetails(request.id));
+    
+    return card;
+}
+
+// Handle approve/reject
+async function handleApproveReject(requestId, action) {
+    const notes = prompt(`Enter notes for ${action} (optional):`);
+    if (notes === null) return; // User cancelled
+    
+    try {
+        const response = await fetch(`/api/head/approve-request/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: action,
+                notes: notes || ''
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`Request ${action}d successfully!`);
+            loadPendingRequests();
+        } else {
+            alert(data.error || `Failed to ${action} request`);
+        }
+    } catch (error) {
+        alert('An error occurred. Please try again.');
+        console.error('Error:', error);
+    }
+}
+
+// View request details
+async function viewRequestDetails(requestId) {
+    const modal = document.getElementById('requestModal');
+    const modalBody = document.getElementById('modalBody');
+    
+    try {
+        const response = await fetch(`/api/head/request-details/${requestId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const request = data.request;
+            const logs = data.approval_logs || [];
+            
+            modalBody.innerHTML = `
+                <h2>Request Details</h2>
+                <div class="request-detail-section">
+                    <h3>${escapeHtml(request.title)}</h3>
+                    <p><strong>Type:</strong> ${escapeHtml(request.request_type)}</p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${request.status}">${request.status.toUpperCase()}</span></p>
+                    <p><strong>Priority:</strong> <span class="priority-badge priority-${request.priority}">${request.priority.toUpperCase()}</span></p>
+                    <p><strong>Student:</strong> ${escapeHtml(request.student_name || 'N/A')}</p>
+                    <p><strong>Created:</strong> ${new Date(request.created_at).toLocaleString()}</p>
+                </div>
+                
+                <div class="request-detail-section">
+                    <h4>Description</h4>
+                    <p>${escapeHtml(request.description)}</p>
+                </div>
+                
+                ${request.final_notes ? `
+                <div class="request-detail-section">
+                    <h4>Final Notes (Visible to Student)</h4>
+                    <p>${escapeHtml(request.final_notes)}</p>
+                </div>
+                ` : ''}
+                
+                <div class="request-detail-section">
+                    <h4>Add Final Notes</h4>
+                    <textarea id="finalNotesInput" class="notes-input" placeholder="Enter final notes that will be visible to the student..."></textarea>
+                    <button class="btn btn-primary" onclick="addFinalNotes(${requestId})">Save Notes</button>
+                </div>
+                
+                ${logs.length > 0 ? `
+                <div class="request-detail-section">
+                    <h4>Approval History</h4>
+                    <div class="approval-logs">
+                        ${logs.map(log => `
+                            <div class="approval-log-entry">
+                                <p><strong>${log.action.toUpperCase()}</strong> by ${escapeHtml(log.approver_name)} on ${new Date(log.created_at).toLocaleString()}</p>
+                                ${log.notes ? `<p class="log-notes">${escapeHtml(log.notes)}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            modal.style.display = 'block';
+        }
+    } catch (error) {
+        alert('Error loading request details');
+        console.error('Error:', error);
+    }
+}
+
+// Add final notes (global function for onclick)
+window.addFinalNotes = async function(requestId) {
+    const notesInput = document.getElementById('finalNotesInput');
+    const notes = notesInput.value.trim();
+    
+    if (!notes) {
+        alert('Please enter notes');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/head/add-final-notes/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ notes })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Final notes added successfully!');
+            notesInput.value = '';
+            viewRequestDetails(requestId); // Refresh details
+        } else {
+            alert(data.error || 'Failed to add notes');
+        }
+    } catch (error) {
+        alert('An error occurred. Please try again.');
+        console.error('Error:', error);
+    }
+}
+
+// Utility function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Filter handlers
+document.getElementById('applyFilters').addEventListener('click', () => {
+    currentFilters = {
+        date_from: document.getElementById('filterDateFrom').value || null,
+        date_to: document.getElementById('filterDateTo').value || null,
+        request_type: document.getElementById('filterType').value || null
+    };
+    loadPendingRequests();
+});
+
+document.getElementById('clearFilters').addEventListener('click', () => {
+    document.getElementById('filterDateFrom').value = '';
+    document.getElementById('filterDateTo').value = '';
+    document.getElementById('filterType').value = '';
+    currentFilters = {};
+    loadPendingRequests();
+});
+
+// Modal close handlers
+document.querySelector('.close').addEventListener('click', () => {
+    document.getElementById('requestModal').style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('requestModal');
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Load statistics (commented out - endpoint not implemented in Flask)
+// async function loadStatistics() {
+//     const container = document.getElementById('statisticsContainer');
+//     
+//     try {
+//         const response = await fetch('/api/head/statistics');
+//         const data = await response.json();
+//         
+//         if (data.success) {
+//             const stats = data.statistics;
+//             
+//             container.innerHTML = `
+//                 <div class="stat-card stat-total">
+//                     <div class="stat-label">Total Requests</div>
+//                     <div class="stat-value">${stats.total}</div>
+//                 </div>
+//                 <div class="stat-card stat-approved">
+//                     <div class="stat-label">Approved</div>
+//                     <div class="stat-value">${stats.approved}</div>
+//                     <div class="stat-rate">${stats.approval_rate}%</div>
+//                 </div>
+//                 <div class="stat-card stat-rejected">
+//                     <div class="stat-label">Rejected</div>
+//                     <div class="stat-value">${stats.rejected}</div>
+//                     <div class="stat-rate">${stats.rejection_rate}%</div>
+//                 </div>
+//                 <div class="stat-card stat-pending">
+//                     <div class="stat-label">Pending</div>
+//                     <div class="stat-value">${stats.pending}</div>
+//                 </div>
+//                 <div class="stat-card stat-processed">
+//                     <div class="stat-label">Processed</div>
+//                     <div class="stat-value">${stats.processed}</div>
+//                 </div>
+//             `;
+//         }
+//     } catch (error) {
+//         console.error('Error loading statistics:', error);
+//         container.innerHTML = '<div class="error-message">Error loading statistics</div>';
+//     }
+// }
+
+// Initialize
+loadUserInfo();
+loadPendingRequests();
+// loadStatistics(); // Commented out - endpoint not implemented
+</script>
+{% endblock %}
