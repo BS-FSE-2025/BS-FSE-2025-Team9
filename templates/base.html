@@ -339,7 +339,7 @@
             <div class="user-info">
                 <span class="user-role">{{ user.get_role_display }}</span>
                 <span>{{ user.get_full_name|default:user.email }}</span>
-                <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
+                <a href="{% url 'core:logout' %}" class="btn btn-outline">Logout</a>
             </div>
         </div>
         {% endif %}

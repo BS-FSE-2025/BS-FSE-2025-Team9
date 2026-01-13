@@ -45,11 +45,11 @@ class StrongPasswordValidator:
 def validate_sce_email(value: str) -> None:
     """
     Validate that email is from SCE academic domain.
-    Only emails ending with @ac.sce.ac.il are allowed.
+    Emails ending with @sce.ac.il or @ac.sce.ac.il are allowed.
     """
-    if not value.endswith("@ac.sce.ac.il"):
+    if not (value.endswith("@sce.ac.il") or value.endswith("@ac.sce.ac.il")):
         raise ValidationError(
-            _("Email must be from SCE academic domain (@ac.sce.ac.il). "
+            _("Email must be from SCE academic domain (@sce.ac.il or @ac.sce.ac.il). "
               "Please use your official college email address."),
             code="invalid_email_domain",
         )

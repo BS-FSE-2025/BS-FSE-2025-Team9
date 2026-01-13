@@ -2,6 +2,7 @@
 Core authentication views with 2FA for all user roles.
 """
 import random
+import re
 from datetime import timedelta
 
 from django.contrib import messages
@@ -15,11 +16,106 @@ from django.conf import settings
 from .models import User, VerificationCode
 
 
+def home(request: HttpRequest) -> HttpResponse:
+    """Homepage / landing page."""
+    if request.user.is_authenticated:
+        return redirect("redirect_to_dashboard")
+    return render(request, "core/home.html")
+
+
+def signup(request: HttpRequest) -> HttpResponse:
+    """Student registration page."""
+    if request.user.is_authenticated:
+        return redirect("redirect_to_dashboard")
+    
+    form_data = {}
+    
+    if request.method == "POST":
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        student_id = request.POST.get("student_id", "").strip()
+        department = request.POST.get("department", "").strip()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
+        
+        form_data = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "student_id": student_id,
+            "department": department,
+        }
+        
+        # Validation
+        errors = []
+        
+        if not first_name or not last_name:
+            errors.append("First name and last name are required.")
+        
+        if not (email.endswith("@sce.ac.il") or email.endswith("@ac.sce.ac.il")):
+            errors.append("Email must be a valid @sce.ac.il or @ac.sce.ac.il address.")
+        
+        if User.objects.filter(email=email).exists():
+            errors.append("An account with this email already exists.")
+        
+        if not student_id:
+            errors.append("Student ID is required.")
+        elif User.objects.filter(student_id=student_id).exists():
+            errors.append("This Student ID is already registered.")
+        
+        # Password validation
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters long.")
+        if not re.search(r'[A-Z]', password):
+            errors.append("Password must contain at least one uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            errors.append("Password must contain at least one lowercase letter.")
+        if not re.search(r'\d', password):
+            errors.append("Password must contain at least one number.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append("Password must contain at least one special character.")
+        
+        if password != confirm_password:
+            errors.append("Passwords do not match.")
+        
+        if errors:
+            return render(request, "core/signup.html", {
+                "error": " ".join(errors),
+                "form_data": form_data
+            })
+        
+        # Create user
+        username = email.split("@")[0]
+        # Ensure unique username
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            role="student",
+            student_id=student_id,
+            department=department or None,
+        )
+        
+        messages.success(request, "Account created successfully! Please sign in.")
+        return redirect("core:login")
+    
+    return render(request, "core/signup.html", {"form_data": form_data})
+
+
 def logout_view(request: HttpRequest) -> HttpResponse:
     """Log out the user."""
     logout(request)
     messages.success(request, "You have been logged out.")
-    return redirect("login")
+    return redirect("core:home")
 
 
 def login_with_verification(request: HttpRequest) -> HttpResponse:
@@ -86,7 +182,7 @@ SCE Student Portal
                 # Store user ID in session for verification step
                 request.session['pending_user_id'] = user.id
                 messages.success(request, f"Verification code sent to {user.email}")
-                return redirect("verify_code")
+                return redirect("core:verify_code")
                 
             except Exception as e:
                 messages.error(request, f"Failed to send verification code: {str(e)}")
@@ -104,13 +200,13 @@ def verify_code(request: HttpRequest) -> HttpResponse:
     
     if not user_id:
         messages.error(request, "Please login first")
-        return redirect("login")
+        return redirect("core:login")
     
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         messages.error(request, "User not found. Please login again.")
-        return redirect("login")
+        return redirect("core:login")
     
     if request.method == "POST":
         entered_code = request.POST.get("code", "").strip()

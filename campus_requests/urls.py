@@ -12,12 +12,12 @@ from django.contrib.auth.decorators import login_required
 def redirect_to_dashboard(request):
     """Redirect authenticated users to their role-specific dashboard."""
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('core:home')
     
     user = request.user
     if user.role == 'student':
         return redirect('students:dashboard')
-    elif user.role == 'staff':
+    elif user.role == 'secretary':
         return redirect('staff:dashboard')
     elif user.role == 'lecturer':
         return redirect('lecturers:dashboard')
@@ -32,11 +32,11 @@ urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
     
-    # Root - redirect to appropriate dashboard
-    path("", redirect_to_dashboard, name="redirect_to_dashboard"),
+    # Core pages (home, auth)
+    path("", include("core.urls")),
     
-    # Authentication (shared login for all roles)
-    path("auth/", include("core.urls")),
+    # Dashboard redirect for authenticated users
+    path("dashboard/", redirect_to_dashboard, name="redirect_to_dashboard"),
     
     # Role-specific dashboards
     path("students/", include("students.urls")),

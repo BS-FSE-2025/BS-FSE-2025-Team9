@@ -6,8 +6,8 @@
     <title>Login - SCE Request Portal</title>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
         }
         
         * {
@@ -18,20 +18,40 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
+        }
+        
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: #f1f5f9;
         }
         
         .login-container {
-            background: white;
+            background: linear-gradient(145deg, #1e1e2e, #252535);
+            border: 1px solid #2d2d3d;
             padding: 2.5rem;
             border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            width: 100%;
-            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
         .login-header {
@@ -40,13 +60,13 @@
         }
         
         .login-header h1 {
-            color: #1f2937;
+            color: #f1f5f9;
             font-size: 1.75rem;
             margin-bottom: 0.5rem;
         }
         
         .login-header p {
-            color: #6b7280;
+            color: #94a3b8;
         }
         
         .form-group {
@@ -57,102 +77,136 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #374151;
+            color: #e2e8f0;
         }
         
         .form-control {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #d1d5db;
+            padding: 0.875rem 1rem;
+            background: #0f0f17;
+            border: 1px solid #2d2d3d;
             border-radius: 0.5rem;
             font-size: 1rem;
+            color: #f1f5f9;
             transition: all 0.2s;
+        }
+        
+        .form-control::placeholder {
+            color: #64748b;
         }
         
         .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
         
         .btn-login {
             width: 100%;
-            padding: 0.875rem;
-            background: var(--primary-color);
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
             color: white;
             border: none;
             border-radius: 0.5rem;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         
         .btn-login:hover {
-            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
         }
         
         .alert {
-            padding: 0.75rem 1rem;
+            padding: 0.875rem 1rem;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
             font-size: 0.9rem;
         }
         
         .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #10b981;
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
         
         .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
         .info-text {
             text-align: center;
             margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 1px solid #e5e7eb;
-            color: #6b7280;
+            border-top: 1px solid #2d2d3d;
+            color: #94a3b8;
             font-size: 0.9rem;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
+        }
+        
+        .signup-link a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>SCE Request Portal</h1>
-            <p>Sign in with your SCE email</p>
+    <div class="login-wrapper">
+        <a href="{% url 'core:home' %}" class="back-link">
+            ← Back to Home
+        </a>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🎓 SCE Request Portal</h1>
+                <p>Sign in with your SCE email</p>
+            </div>
+            
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@sce.ac.il" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+            
+            <p class="info-text">
+                🔐 A verification code will be sent to your email for security.
+            </p>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="{% url 'core:signup' %}">Create one here</a>
+            </div>
         </div>
-        
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="your.email@ac.sce.ac.il" required>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-            </div>
-            
-            <button type="submit" class="btn-login">Sign In</button>
-        </form>
-        
-        <p class="info-text">
-            A verification code will be sent to your email for security.
-        </p>
     </div>
 </body>
 </html>

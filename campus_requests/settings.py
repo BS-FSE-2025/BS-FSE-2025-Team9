@@ -104,9 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # ============================================
 # AUTHENTICATION
 # ============================================
-LOGIN_URL = "login"
+LOGIN_URL = "core:login"
 LOGIN_REDIRECT_URL = "redirect_to_dashboard"
-LOGOUT_REDIRECT_URL = "login"
+LOGOUT_REDIRECT_URL = "core:home"
 
 # ============================================
 # INTERNATIONALIZATION
