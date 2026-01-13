@@ -1,0 +1,358 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --primary:#2563eb;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --info:#0891b2;
+
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+}
+
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.dashboard-container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.dashboard-header{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 18px;
+}
+
+.header-content{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 16px;
+}
+
+.dashboard-header h1{
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.welcome-text{
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.logout-btn{
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.logout-btn:hover{ background:#fafafa; }
+
+.filter-section, .requests-section{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 18px;
+}
+
+.filter-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.filter-header h2, .requests-section h2{
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.filter-subtitle, .requests-count{
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.filter-form{ margin-top: 18px; }
+
+.filter-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.filter-group label{
+  font-weight: 800;
+  display:block;
+  margin-bottom: 8px;
+}
+
+.filter-group select{
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafafa;
+  font-size: 15px;
+}
+
+.requests-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-top: 16px;
+}
+
+.request-card{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  background: white;
+  transition: .15s;
+}
+
+.request-card:hover{
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+  transform: translateY(-1px);
+}
+
+.request-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.student-info{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap: 10px;
+}
+
+.student-name{
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.student-id{
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status-badge{
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.status-pending{ background:#fef3c7; border-color:#fde68a; }
+.status-approved{ background:#dcfce7; border-color:#86efac; }
+.status-rejected{ background:#fee2e2; border-color:#fecaca; }
+.status-needs_info{ background:#dbeafe; border-color:#bfdbfe; }
+
+.view-btn{
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor:pointer;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.view-btn:hover{ background:#fafafa; }
+
+.request-details{
+  display:flex;
+  gap: 26px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-row{
+  display:flex;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.detail-label{ color: var(--muted); font-weight: 800; }
+.detail-value{ font-weight: 800; }
+
+.request-description{
+  color: #374151;
+  font-size: 15px;
+}
+
+.attachments-info{
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.no-requests{
+  padding: 26px;
+  color: var(--muted);
+  text-align:center;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+}
+
+/* Modal */
+.modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.modal.open{ display:flex; }
+
+.modal-content{
+  width: min(860px, 96vw);
+  max-height: 92vh;
+  background: white;
+  border-radius: 18px;
+  overflow:auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,.25);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 18px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2{
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.modal-subtitle{
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.close-btn{
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor:pointer;
+  font-size: 22px;
+}
+
+.close-btn:hover{ background:#fafafa; }
+
+.modal-body{ padding: 18px; }
+
+.loading{ color: var(--muted); font-weight: 800; }
+
+.detail-box{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: #fafafa;
+}
+
+.detail-box h3{
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.kv{
+  display:grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 12px;
+  font-size: 15px;
+}
+
+.kv .k{ color: var(--muted); font-weight: 900; }
+.kv .v{ font-weight: 800; }
+
+textarea{
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 15px;
+  resize: vertical;
+}
+
+.action-buttons{
+  display:flex;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.btn{
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 900;
+  color: white;
+}
+
+.btn-approve{ background: var(--success); }
+.btn-reject{ background: var(--danger); }
+.btn-info{ background: var(--info); }
+
+.btn:hover{ filter: brightness(.95); }
+
+@media (max-width: 768px){
+  .filter-row{ grid-template-columns: 1fr; }
+  .dashboard-header h1{ font-size: 28px; }
+  .kv{ grid-template-columns: 1fr; }
+}
+
+<div class="req-meta">
+  <div><span class="label">Course</span> {{ r.course_name }}</div>
+  <div><span class="label">Submitted</span> {{ r.submitted_at|date:"Y-m-d H:i" }}</div>
+</div>
+
+.req-meta{
+  display:flex;
+  gap:16px;
+  margin-top:8px;
+  font-size:14px;
+  opacity:0.9;
+}
+.req-meta .label{
+  font-weight:700;
+  margin-right:6px;
+}
+
