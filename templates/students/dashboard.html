@@ -1,255 +1,177 @@
 {% extends "base.html" %}
 {% block title %}My Requests - SCE Portal{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 2rem;
-    }
-    
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-text);
-        letter-spacing: -0.025em;
-    }
-    
-    .page-subtitle {
-        color: var(--color-text-secondary);
-        margin-top: 0.25rem;
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    @media (max-width: 900px) {
-        .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    
-    .stat-card {
-        background: var(--color-card);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-    }
-    
-    .stat-label {
-        font-size: 0.8125rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--color-text);
-        letter-spacing: -0.025em;
-    }
-    
-    .stat-value.pending { color: var(--color-warning); }
-    .stat-value.approved { color: var(--color-success); }
-    .stat-value.rejected { color: var(--color-error); }
-    
-    .filters-bar {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .filter-label {
-        font-size: 0.8125rem;
-        color: var(--color-text-secondary);
-        font-weight: 500;
-    }
-    
-    .filter-tabs {
-        display: flex;
-        gap: 0.25rem;
-        background: var(--color-bg);
-        padding: 0.25rem;
-        border-radius: var(--radius);
-    }
-    
-    .filter-tab {
-        padding: 0.5rem 0.875rem;
-        font-size: 0.8125rem;
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        background: transparent;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.15s ease;
-    }
-    
-    .filter-tab:hover {
-        color: var(--color-text);
-    }
-    
-    .filter-tab.active {
-        background: var(--color-card);
-        color: var(--color-text);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .request-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .request-item {
-        background: var(--color-card);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        transition: all 0.15s ease;
-    }
-    
-    .request-item:hover {
-        border-color: var(--color-border-dark);
-        box-shadow: var(--shadow);
-    }
-    
-    .request-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.875rem;
-        flex-wrap: wrap;
-    }
-    
-    .request-id {
-        font-weight: 600;
-        color: var(--color-text);
-    }
-    
-    .request-meta {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-    }
-    
-    @media (max-width: 768px) {
-        .request-meta { grid-template-columns: repeat(2, 1fr); }
-    }
-    
-    .meta-item {
-        font-size: 0.875rem;
-    }
-    
-    .meta-label {
-        color: var(--color-text-muted);
-        margin-bottom: 0.125rem;
-    }
-    
-    .meta-value {
-        color: var(--color-text);
-        font-weight: 500;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="page-header">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8" data-aos="fade-down">
     <div>
-        <h1 class="page-title">My Requests</h1>
-        <p class="page-subtitle">Track and manage your academic requests</p>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-3">
+            <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+            Dashboard
+        </div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">My Requests</h1>
+        <p class="text-slate-400 mt-1">Track and manage your academic requests</p>
     </div>
-    <a href="{% url 'students:submit_request' %}" class="btn btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    <a href="{% url 'students:submit_request' %}" class="btn btn-primary gap-2 btn-ripple group">
+        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
         New Request
     </a>
 </div>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-label">Total Requests</div>
-        <div class="stat-value">{{ total|default:0 }}</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div data-aos="fade-up" data-aos-delay="100" class="glass-card rounded-2xl p-6 card-hover group relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-slate-400 text-sm font-medium">Total</span>
+                <div class="w-10 h-10 rounded-xl bg-slate-700/50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-white animate-number">{{ total|default:0 }}</div>
+            <div class="text-xs text-slate-500 mt-1">All time requests</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-label">Pending</div>
-        <div class="stat-value pending">{{ pending|default:0 }}</div>
+    
+    <div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl p-6 card-hover group relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-slate-400 text-sm font-medium">Pending</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-amber-400 animate-number">{{ pending|default:0 }}</div>
+            <div class="text-xs text-slate-500 mt-1">Awaiting review</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-label">Approved</div>
-        <div class="stat-value approved">{{ approved|default:0 }}</div>
+    
+    <div data-aos="fade-up" data-aos-delay="300" class="glass-card rounded-2xl p-6 card-hover group relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-slate-400 text-sm font-medium">Approved</span>
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-cyan-400 animate-number">{{ approved|default:0 }}</div>
+            <div class="text-xs text-slate-500 mt-1">Successfully completed</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-label">Rejected</div>
-        <div class="stat-value rejected">{{ rejected|default:0 }}</div>
+    
+    <div data-aos="fade-up" data-aos-delay="400" class="glass-card rounded-2xl p-6 card-hover group relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-slate-400 text-sm font-medium">Rejected</span>
+                <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-red-400 animate-number">{{ rejected|default:0 }}</div>
+            <div class="text-xs text-slate-500 mt-1">Not approved</div>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">All Requests</h2>
-    </div>
-    <div class="card-body">
-        <div class="filters-bar">
-            <div class="filter-tabs">
-                <a href="?status=all" class="filter-tab {% if status_filter == 'all' or not status_filter %}active{% endif %}">All</a>
-                <a href="?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
-                <a href="?status=approved" class="filter-tab {% if status_filter == 'approved' %}active{% endif %}">Approved</a>
-                <a href="?status=rejected" class="filter-tab {% if status_filter == 'rejected' %}active{% endif %}">Rejected</a>
-            </div>
-        </div>
+<!-- Requests Card -->
+<div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl overflow-hidden">
+    <!-- Card Header -->
+    <div class="px-6 py-4 border-b border-slate-700/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 class="text-lg font-semibold text-white">All Requests</h2>
         
+        <!-- Filter Tabs -->
+        <div class="flex gap-1 p-1 bg-slate-800/50 rounded-lg">
+            <a href="?status=all" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'all' or not status_filter %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                All
+            </a>
+            <a href="?status=pending" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'pending' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                Pending
+            </a>
+            <a href="?status=approved" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'approved' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                Approved
+            </a>
+            <a href="?status=rejected" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'rejected' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                Rejected
+            </a>
+        </div>
+    </div>
+    
+    <!-- Card Body -->
+    <div class="p-6">
         {% if requests %}
-        <div class="request-list">
+        <div class="space-y-4">
             {% for req in requests %}
-            <a href="{% url 'students:request_detail' req.request_id %}" class="request-item">
-                <div class="request-header">
-                    <span class="request-id">{{ req.request_id }}</span>
-                    <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
-                    <span class="badge badge-default">{{ req.request_type }}</span>
-                    <span class="badge priority-{{ req.priority }}">{{ req.get_priority_display }}</span>
+            <a href="{% url 'students:request_detail' req.request_id %}" 
+               class="block p-5 rounded-xl bg-slate-800/30 border border-slate-700/30 hover:border-indigo-500/30 hover:bg-slate-800/50 transition-all duration-300 group row-hover overflow-hidden"
+               data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'0'|add:forloop.counter0|stringformat:'d' }}0"
+               style="--stagger-delay: {{ forloop.counter0 }};"
+               >
+                <!-- Header -->
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span class="font-mono text-sm text-indigo-400 font-medium">{{ req.request_id }}</span>
+                    <span class="badge status-{{ req.status }} text-xs px-3 py-1 rounded-full">{{ req.get_status_display }}</span>
+                    <span class="badge bg-slate-700/50 text-slate-300 border-slate-600/50 text-xs px-3 py-1 rounded-full">{{ req.request_type }}</span>
+                    <span class="badge priority-{{ req.priority }} text-xs px-3 py-1 rounded-full">{{ req.get_priority_display }}</span>
+                    <svg class="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </div>
-                <div class="request-meta">
-                    <div class="meta-item">
-                        <div class="meta-label">Title</div>
-                        <div class="meta-value">{{ req.title|truncatechars:30 }}</div>
+                
+                <!-- Meta Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Title</div>
+                        <div class="text-sm text-slate-200 font-medium truncate">{{ req.title|truncatechars:25 }}</div>
                     </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Type</div>
-                        <div class="meta-value">{{ req.request_type }}</div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Type</div>
+                        <div class="text-sm text-slate-300">{{ req.request_type }}</div>
                     </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Submitted</div>
-                        <div class="meta-value">{{ req.created_at|date:"M d, Y" }}</div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Submitted</div>
+                        <div class="text-sm text-slate-300">{{ req.created_at|date:"M d, Y" }}</div>
                     </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Last Updated</div>
-                        <div class="meta-value">{{ req.updated_at|date:"M d, Y" }}</div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Last Updated</div>
+                        <div class="text-sm text-slate-300">{{ req.updated_at|date:"M d, Y" }}</div>
                     </div>
                 </div>
             </a>
             {% endfor %}
         </div>
         {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
-            <h3>No requests yet</h3>
-            <p>Submit your first request to get started</p>
+        <!-- Empty State -->
+        <div class="text-center py-16" data-aos="fade-up">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 breathe"></div>
+                <div class="relative w-24 h-24 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">No requests yet</h3>
+            <p class="text-slate-400 mb-8 max-w-md mx-auto">You haven't submitted any requests. Create your first request to get started with the process.</p>
+            <a href="{% url 'students:submit_request' %}" class="btn btn-primary btn-lg gap-2 btn-ripple group">
+                <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Create Your First Request
+            </a>
         </div>
         {% endif %}
     </div>
