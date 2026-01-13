@@ -109,24 +109,67 @@
             outline-offset: 2px;
         }
         
-        /* Override btn-primary with proper dark theme colors */
+        /* Override btn-primary with dark theme colors */
         .btn-primary {
-            background-color: rgb(99, 102, 241) !important;
-            border-color: rgb(99, 102, 241) !important;
-            color: white !important;
+            background-color: rgb(30, 41, 59) !important;
+            border: 1px solid rgba(148, 163, 184, 0.15) !important;
+            color: rgb(226, 232, 240) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
         
         .btn-primary:hover {
-            background-color: rgb(79, 70, 229) !important;
-            border-color: rgb(79, 70, 229) !important;
+            background-color: rgb(51, 65, 85) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
         }
         
         .btn-primary:focus {
-            background-color: rgb(79, 70, 229) !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+            background-color: rgb(51, 65, 85) !important;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15) !important;
         }
         
-        .select:focus, .input:focus {
+        /* Override btn-ghost to remove pink/accent colors */
+        .btn-ghost {
+            color: rgb(148, 163, 184) !important;
+        }
+        
+        .btn-ghost:hover {
+            background-color: rgba(51, 65, 85, 0.5) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        /* Override btn-outline to remove pink/accent colors */
+        .btn-outline {
+            border-color: rgb(71, 85, 105) !important;
+            color: rgb(148, 163, 184) !important;
+            background-color: transparent !important;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgb(51, 65, 85) !important;
+            border-color: rgb(100, 116, 139) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        /* Override select dropdown */
+        .select {
+            background-color: rgba(30, 41, 59, 0.5) !important;
+            border-color: rgb(51, 65, 85) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        .select:focus {
+            border-color: rgb(99, 102, 241) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+            outline: none !important;
+        }
+        
+        .select option {
+            background-color: rgb(30, 41, 59) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        .input:focus {
             border-color: rgb(99, 102, 241);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
