@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Submit Request{% endblock %}
+{% block content %}
+
+<div class="dashboard-container">
+
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1>Submit New Request</h1>
+        <div class="welcome-text">Fill out the form below to submit your request</div>
+      </div>
+      <a href="{% url 'dashboard' %}" class="logout-btn" style="text-decoration: none; display: inline-block;">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <section class="filter-section" style="max-width: 800px; margin: 0 auto;">
+    <div class="filter-header">
+      <span class="filter-icon">📝</span>
+      <h2>Request Form</h2>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div style="background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="filter-form" style="margin-top: 20px;">
+      {% csrf_token %}
+      
+      <div class="filter-row" style="flex-direction: column; gap: 20px;">
+        <div class="filter-group" style="width: 100%;">
+          <label for="{{ form.student.id_for_label }}">Student *</label>
+          {{ form.student }}
+          {% if form.student.errors %}
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ form.student.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="filter-group" style="width: 100%;">
+          <label for="{{ form.course_name.id_for_label }}">Course Name *</label>
+          {{ form.course_name }}
+          {% if form.course_name.errors %}
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ form.course_name.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="filter-group" style="width: 100%;">
+          <label for="{{ form.request_type.id_for_label }}">Request Type *</label>
+          {{ form.request_type }}
+          {% if form.request_type.errors %}
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ form.request_type.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="filter-group" style="width: 100%;">
+          <label for="{{ form.description.id_for_label }}">Description *</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="filter-group" style="width: 100%;">
+          <label for="id_attachments">Attachments (Optional)</label>
+          <input type="file" name="attachments" id="id_attachments" multiple accept="*/*" 
+                 style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+          <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">You can upload multiple files (optional)</small>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
+        <a href="{% url 'dashboard' %}" style="padding: 12px 24px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block;">Cancel</a>
+        <button type="submit" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">Submit Request</button>
+      </div>
+    </form>
+  </section>
+
+</div>
+
+{% endblock %}
