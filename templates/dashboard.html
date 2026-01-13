@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Request Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="header-actions">
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="welcome-message">
+            <h2>Welcome to Request Management System</h2>
+            <p>This is a general dashboard. Department Head features are available at <a href="{{ url_for('head_dashboard') }}">Head Dashboard</a></p>
+        </div>
+    </main>
+</div>
+{% endblock %}
