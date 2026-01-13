@@ -14,6 +14,8 @@ class ManagementAccessControlTest(TestCase):
     def setUp(self):
         self.client = Client()
         
+        self.degree = Degree.objects.create(name="Software Engineering", code="SE")
+        
         # Create users with different roles
         self.admin = User.objects.create_superuser(
             username="admin",
@@ -57,7 +59,8 @@ class ManagementAccessControlTest(TestCase):
             role=User.ROLE_STUDENT,
             first_name="Student",
             last_name="One",
-            student_id="123456789"
+            student_id="123456789",
+            degree=self.degree
         )
     
     def test_admin_can_access_user_management(self):

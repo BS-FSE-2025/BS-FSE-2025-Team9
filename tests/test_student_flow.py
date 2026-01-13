@@ -71,6 +71,22 @@ class StudentSignupTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "sce.ac.il")
+    
+    def test_signup_requires_degree(self):
+        """Test signup fails without degree selection."""
+        response = self.client.post(reverse('core:signup'), {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'john.doe@sce.ac.il',
+            'student_id': '123456789',
+            # No degree selected
+            'password': 'Test123!@#',
+            'confirm_password': 'Test123!@#',
+        })
+        
+        self.assertEqual(response.status_code, 200)  # Stays on page
+        self.assertContains(response, "degree")
+        self.assertFalse(User.objects.filter(email='john.doe@sce.ac.il').exists())
 
 
 class StudentRequestFormTest(TestCase):

@@ -148,6 +148,8 @@ class SecretaryDashboardTest(TestCase):
     def setUp(self):
         self.client = Client()
         
+        self.degree = Degree.objects.create(name="Software Engineering", code="SE")
+        
         self.secretary = User.objects.create_user(
             username="secretary1",
             email="secretary@sce.ac.il",
@@ -164,7 +166,8 @@ class SecretaryDashboardTest(TestCase):
             role=User.ROLE_STUDENT,
             first_name="Student",
             last_name="One",
-            student_id="123456789"
+            student_id="123456789",
+            degree=self.degree
         )
         
         # Create requests

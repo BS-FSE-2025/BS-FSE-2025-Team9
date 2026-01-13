@@ -3,8 +3,10 @@ Signal handlers for handling orphaned requests when courses or lecturers are del
 Routes pending requests to Head of Department.
 Also handles automatic initialization of required data (degrees).
 """
+import sys
 from django.db.models.signals import pre_delete, m2m_changed, post_migrate
 from django.dispatch import receiver
+from django.conf import settings
 
 from core.models import User
 from .models import Course, Request, StatusHistory, Notification, Degree
@@ -22,10 +24,15 @@ DEFAULT_DEGREES = [
 ]
 
 
-def initialize_degrees():
+def is_testing():
+    """Check if we're running tests."""
+    return 'test' in sys.argv or 'pytest' in sys.modules
+
+
+def initialize_degrees(verbose=True):
     """
     Ensure all default degrees exist in the database.
-    Called automatically after migrations.
+    Called automatically after migrations (but not during tests).
     """
     created_count = 0
     for degree_data in DEFAULT_DEGREES:
@@ -35,9 +42,10 @@ def initialize_degrees():
         )
         if created:
             created_count += 1
-            print(f"  ✓ Created degree: {degree.name} ({degree.code})")
+            if verbose:
+                print(f"  ✓ Created degree: {degree.name} ({degree.code})")
     
-    if created_count > 0:
+    if created_count > 0 and verbose:
         print(f"  → Initialized {created_count} default degree(s)")
     
     return created_count
@@ -48,12 +56,17 @@ def create_default_degrees(sender, **kwargs):
     """
     Automatically create default degrees after migrations run.
     This ensures degrees always exist in the database.
+    Skip during tests to allow test isolation.
     """
     # Only run for our app
     if sender.name == 'requests_unified':
+        # Skip during tests - tests create their own degrees
+        if is_testing():
+            return
+        
         try:
             initialize_degrees()
-        except Exception as e:
+        except Exception:
             # Silently fail if database isn't ready
             pass
 
