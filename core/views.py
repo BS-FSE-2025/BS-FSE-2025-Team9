@@ -61,6 +61,8 @@ def signup(request: HttpRequest) -> HttpResponse:
         
         if not student_id:
             errors.append("Student ID is required.")
+        elif not re.match(r'^\d{9}$', student_id):
+            errors.append("Student ID must be exactly 9 digits.")
         elif User.objects.filter(student_id=student_id).exists():
             errors.append("This Student ID is already registered.")
         

@@ -100,8 +100,13 @@ def user_add(request):
         elif len(password) < 6:
             errors.append("Password must be at least 6 characters.")
         
-        if student_id and User.objects.filter(student_id=student_id).exists():
-            errors.append("This Student ID is already in use.")
+        # Validate Student ID format (exactly 9 digits) if provided
+        if student_id:
+            import re
+            if not re.match(r'^\d{9}$', student_id):
+                errors.append("Student ID must be exactly 9 digits.")
+            elif User.objects.filter(student_id=student_id).exists():
+                errors.append("This Student ID is already in use.")
         
         if employee_id and User.objects.filter(employee_id=employee_id).exists():
             errors.append("This Employee ID is already in use.")
@@ -172,8 +177,13 @@ def user_edit(request, user_id):
         if not first_name or not last_name:
             errors.append("First name and last name are required.")
         
-        if student_id and User.objects.filter(student_id=student_id).exclude(id=user.id).exists():
-            errors.append("This Student ID is already in use.")
+        # Validate Student ID format (exactly 9 digits) if provided
+        if student_id:
+            import re
+            if not re.match(r'^\d{9}$', student_id):
+                errors.append("Student ID must be exactly 9 digits.")
+            elif User.objects.filter(student_id=student_id).exclude(id=user.id).exists():
+                errors.append("This Student ID is already in use.")
         
         if employee_id and User.objects.filter(employee_id=employee_id).exclude(id=user.id).exists():
             errors.append("This Employee ID is already in use.")
