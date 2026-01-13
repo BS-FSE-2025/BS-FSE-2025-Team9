@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "staff",  # Staff dashboard
     "lecturers",  # Lecturer dashboard
     "head_of_dept",  # Department head dashboard
+    # Admin
+    "management",  # Admin user management dashboard
 ]
 
 MIDDLEWARE = [

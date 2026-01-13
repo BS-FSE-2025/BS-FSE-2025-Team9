@@ -40,12 +40,12 @@ def create_users():
             'role': User.ROLE_STUDENT,
         },
         {
-            'username': 'staff1',
-            'email': 'staff@ac.sce.ac.il',
-            'password': 'Staff123!',
+            'username': 'secretary1',
+            'email': 'secretary@ac.sce.ac.il',
+            'password': 'Secretary1!',
             'first_name': 'Sarah',
             'last_name': 'Secretary',
-            'role': User.ROLE_STAFF,
+            'role': User.ROLE_SECRETARY,
         },
         {
             'username': 'lecturer1',
@@ -62,6 +62,14 @@ def create_users():
             'first_name': 'Prof. David',
             'last_name': 'Department Head',
             'role': User.ROLE_HEAD_OF_DEPT,
+        },
+        {
+            'username': 'admin1',
+            'email': 'admin@ac.sce.ac.il',
+            'password': 'Admin123!',
+            'first_name': 'System',
+            'last_name': 'Administrator',
+            'role': User.ROLE_ADMIN,
         },
     ]
     

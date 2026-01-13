@@ -323,11 +323,15 @@
         
         {% if user.is_authenticated %}
         <div class="navbar-nav">
-            {% if user.role == 'student' %}
+            {% if user.role == 'admin' or user.is_superuser %}
+                <a href="{% url 'management:dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'management:user_list' %}" class="nav-link">Users</a>
+                <a href="{% url 'management:user_add' %}" class="nav-link">Add User</a>
+            {% elif user.role == 'student' %}
                 <a href="{% url 'students:dashboard' %}" class="nav-link">Dashboard</a>
                 <a href="{% url 'students:submit_request' %}" class="nav-link">New Request</a>
                 <a href="{% url 'students:profile_edit' %}" class="nav-link">Profile</a>
-            {% elif user.role == 'staff' %}
+            {% elif user.role == 'secretary' %}
                 <a href="{% url 'staff:dashboard' %}" class="nav-link">Dashboard</a>
             {% elif user.role == 'lecturer' %}
                 <a href="{% url 'lecturers:dashboard' %}" class="nav-link">Dashboard</a>

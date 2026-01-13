@@ -15,7 +15,10 @@ def redirect_to_dashboard(request):
         return redirect('core:home')
     
     user = request.user
-    if user.role == 'student':
+    # Admin or superuser goes to management dashboard
+    if user.role == 'admin' or user.is_superuser:
+        return redirect('management:dashboard')
+    elif user.role == 'student':
         return redirect('students:dashboard')
     elif user.role == 'secretary':
         return redirect('staff:dashboard')
@@ -43,6 +46,9 @@ urlpatterns = [
     path("staff/", include("staff.urls")),
     path("lecturers/", include("lecturers.urls")),
     path("head/", include("head_of_dept.urls")),
+    
+    # Admin user management
+    path("management/", include("management.urls")),
 ]
 
 # Serve media files in development

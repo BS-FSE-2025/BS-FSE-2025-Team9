@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit User{% else %}Add User{% endif %} - SCE Portal{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.75rem;
+        color: #f1f5f9;
+    }
+    
+    .page-header p {
+        color: #64748b;
+        margin-top: 0.5rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    @media (max-width: 500px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #6366f1;
+    }
+    
+    .checkbox-group label {
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+    
+    .checkbox-group small {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .password-hint {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<div class="form-container">
+    <div class="page-header">
+        <h1>{% if is_edit %}Edit User{% else %}Add New User{% endif %}</h1>
+        <p>{% if is_edit %}Update user information{% else %}Create a new user account{% endif %}</p>
+    </div>
+    
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="first_name">First Name *</label>
+                    <input type="text" name="first_name" id="first_name" class="form-control" 
+                           value="{% if is_edit %}{{ user.first_name }}{% else %}{{ form_data.first_name }}{% endif %}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="last_name">Last Name *</label>
+                    <input type="text" name="last_name" id="last_name" class="form-control" 
+                           value="{% if is_edit %}{{ user.last_name }}{% else %}{{ form_data.last_name }}{% endif %}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="email">Email *</label>
+                <input type="email" name="email" id="email" class="form-control" 
+                       placeholder="user@sce.ac.il"
+                       value="{% if is_edit %}{{ user.email }}{% else %}{{ form_data.email }}{% endif %}" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="role">Role *</label>
+                <select name="role" id="role" class="form-control" required onchange="toggleIdFields()">
+                    {% for value, label in role_choices %}
+                    <option value="{{ value }}" 
+                            {% if is_edit and user.role == value %}selected{% endif %}
+                            {% if not is_edit and form_data.role == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="department">Department</label>
+                <select name="department" id="department" class="form-control">
+                    <option value="">Select Department</option>
+                    {% if is_edit %}
+                        {% with dept=user.department %}
+                        <option value="Software Engineering" {% if dept == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                        <option value="Computer Science" {% if dept == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                        <option value="Electrical Engineering" {% if dept == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                        <option value="Mechanical Engineering" {% if dept == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                        <option value="Civil Engineering" {% if dept == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                        <option value="Industrial Engineering" {% if dept == 'Industrial Engineering' %}selected{% endif %}>Industrial Engineering</option>
+                        {% endwith %}
+                    {% else %}
+                        {% with dept=form_data.department %}
+                        <option value="Software Engineering" {% if dept == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                        <option value="Computer Science" {% if dept == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                        <option value="Electrical Engineering" {% if dept == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                        <option value="Mechanical Engineering" {% if dept == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                        <option value="Civil Engineering" {% if dept == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                        <option value="Industrial Engineering" {% if dept == 'Industrial Engineering' %}selected{% endif %}>Industrial Engineering</option>
+                        {% endwith %}
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group" id="student_id_group">
+                    <label class="form-label" for="student_id">Student ID</label>
+                    <input type="text" name="student_id" id="student_id" class="form-control" 
+                           placeholder="e.g., 123456789"
+                           value="{% if is_edit %}{{ user.student_id|default:'' }}{% else %}{{ form_data.student_id }}{% endif %}">
+                </div>
+                <div class="form-group" id="employee_id_group">
+                    <label class="form-label" for="employee_id">Employee ID</label>
+                    <input type="text" name="employee_id" id="employee_id" class="form-control" 
+                           placeholder="e.g., EMP-12345"
+                           value="{% if is_edit %}{{ user.employee_id|default:'' }}{% else %}{{ form_data.employee_id }}{% endif %}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">Password {% if not is_edit %}*{% endif %}</label>
+                <input type="password" name="password" id="password" class="form-control" 
+                       placeholder="{% if is_edit %}Leave blank to keep current password{% else %}Enter password{% endif %}"
+                       {% if not is_edit %}required{% endif %}>
+                {% if is_edit %}
+                <p class="password-hint">Leave empty to keep the current password.</p>
+                {% endif %}
+            </div>
+            
+            {% if is_edit %}
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_active" id="is_active" {% if user.is_active %}checked{% endif %}>
+                    <div>
+                        <label for="is_active">Account Active</label>
+                        <small>Inactive accounts cannot log in to the system.</small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}Update User{% else %}Create User{% endif %}
+                </button>
+                <a href="{% url 'management:user_list' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleIdFields() {
+    const role = document.getElementById('role').value;
+    const studentIdGroup = document.getElementById('student_id_group');
+    const employeeIdGroup = document.getElementById('employee_id_group');
+    
+    if (role === 'student') {
+        studentIdGroup.style.display = 'block';
+        employeeIdGroup.style.display = 'none';
+    } else {
+        studentIdGroup.style.display = 'none';
+        employeeIdGroup.style.display = 'block';
+    }
+}
+
+// Initialize on page load
+toggleIdFields();
+</script>
+{% endblock %}

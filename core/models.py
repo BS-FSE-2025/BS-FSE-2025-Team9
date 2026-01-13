@@ -14,15 +14,17 @@ class User(AbstractUser):
     """
     
     ROLE_STUDENT = 'student'
-    ROLE_STAFF = 'staff'
+    ROLE_SECRETARY = 'secretary'
     ROLE_LECTURER = 'lecturer'
     ROLE_HEAD_OF_DEPT = 'head_of_dept'
+    ROLE_ADMIN = 'admin'
     
     ROLE_CHOICES = [
         (ROLE_STUDENT, 'Student'),
-        (ROLE_STAFF, 'Staff'),
+        (ROLE_SECRETARY, 'Secretary'),
         (ROLE_LECTURER, 'Lecturer'),
         (ROLE_HEAD_OF_DEPT, 'Head of Department'),
+        (ROLE_ADMIN, 'Administrator'),
     ]
     
     email = models.EmailField(
@@ -82,12 +84,15 @@ class User(AbstractUser):
     )
     
     def save(self, *args, **kwargs):
+        # Auto-set role to admin for superusers
+        if self.is_superuser and self.role != self.ROLE_ADMIN:
+            self.role = self.ROLE_ADMIN
         # Auto-generate student_id if role is student and not set
         if self.role == self.ROLE_STUDENT and not self.student_id:
             import uuid
             self.student_id = f"STU-{uuid.uuid4().hex[:8].upper()}"
         # Auto-generate employee_id if role is staff/lecturer/head and not set
-        if self.role in [self.ROLE_STAFF, self.ROLE_LECTURER, self.ROLE_HEAD_OF_DEPT] and not self.employee_id:
+        if self.role in [self.ROLE_SECRETARY, self.ROLE_LECTURER, self.ROLE_HEAD_OF_DEPT, self.ROLE_ADMIN] and not self.employee_id:
             import uuid
             self.employee_id = f"EMP-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
@@ -100,8 +105,8 @@ class User(AbstractUser):
         return self.role == self.ROLE_STUDENT
     
     @property
-    def is_staff_member(self):
-        return self.role == self.ROLE_STAFF
+    def is_secretary(self):
+        return self.role == self.ROLE_SECRETARY
     
     @property
     def is_lecturer(self):
@@ -111,12 +116,18 @@ class User(AbstractUser):
     def is_head_of_dept(self):
         return self.role == self.ROLE_HEAD_OF_DEPT
     
+    @property
+    def is_admin(self):
+        return self.role == self.ROLE_ADMIN or self.is_superuser
+    
     def get_dashboard_url(self):
         """Return the appropriate dashboard URL based on role."""
         from django.urls import reverse
-        if self.role == self.ROLE_STUDENT:
+        if self.role == self.ROLE_ADMIN or self.is_superuser:
+            return reverse('management:dashboard')
+        elif self.role == self.ROLE_STUDENT:
             return reverse('students:dashboard')
-        elif self.role == self.ROLE_STAFF:
+        elif self.role == self.ROLE_SECRETARY:
             return reverse('staff:dashboard')
         elif self.role == self.ROLE_LECTURER:
             return reverse('lecturers:dashboard')

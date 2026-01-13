@@ -226,8 +226,8 @@ def verify_code(request: HttpRequest) -> HttpResponse:
             # Log the user in
             login(request, user)
             
-            # Clean up session
-            del request.session['pending_user_id']
+            # Clean up session (use pop to avoid KeyError if already deleted)
+            request.session.pop('pending_user_id', None)
             
             messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
             return redirect("redirect_to_dashboard")

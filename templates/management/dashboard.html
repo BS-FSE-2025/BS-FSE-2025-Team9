@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - SCE Portal{% endblock %}
+
+{% block content %}
+<style>
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.75rem;
+        color: #f1f5f9;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: linear-gradient(145deg, #1e1e2e, #252535);
+        border: 1px solid #2d2d3d;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: #6366f1;
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.25rem;
+        color: #f1f5f9;
+    }
+    
+    .recent-users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .recent-users-table th,
+    .recent-users-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #2d2d3d;
+    }
+    
+    .recent-users-table th {
+        color: #94a3b8;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    
+    .recent-users-table td {
+        color: #f1f5f9;
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .role-student { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .role-secretary { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .role-lecturer { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .role-head_of_dept { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
+    .role-admin { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+</style>
+
+<div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <div class="quick-actions">
+        <a href="{% url 'management:user_add' %}" class="btn btn-primary">+ Add New User</a>
+        <a href="{% url 'management:user_list' %}" class="btn btn-outline">View All Users</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-number">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍🎓</div>
+        <div class="stat-number">{{ students }}</div>
+        <div class="stat-label">Students</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👩‍💼</div>
+        <div class="stat-number">{{ secretaries }}</div>
+        <div class="stat-label">Secretaries</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👨‍🏫</div>
+        <div class="stat-number">{{ lecturers }}</div>
+        <div class="stat-label">Lecturers</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👔</div>
+        <div class="stat-number">{{ hods }}</div>
+        <div class="stat-label">Dept. Heads</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⚙️</div>
+        <div class="stat-number">{{ admins }}</div>
+        <div class="stat-label">Admins</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="section-header">
+        <h2>Recently Added Users</h2>
+        <a href="{% url 'management:user_list' %}" style="color: #6366f1; text-decoration: none;">View all →</a>
+    </div>
+    
+    {% if recent_users %}
+    <table class="recent-users-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in recent_users %}
+            <tr>
+                <td>{{ user.get_full_name|default:user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td><span class="role-badge role-{{ user.role }}">{{ user.get_role_display }}</span></td>
+                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #64748b; text-align: center; padding: 2rem;">No users found.</p>
+    {% endif %}
+</div>
+{% endblock %}
