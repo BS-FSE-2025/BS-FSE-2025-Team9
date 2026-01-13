@@ -18,7 +18,7 @@ def staff_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
-        if request.user.role != User.ROLE_STAFF:
+        if request.user.role != User.ROLE_SECRETARY:
             messages.error(request, "Access denied. Staff account required.")
             return redirect('redirect_to_dashboard')
         return view_func(request, *args, **kwargs)
@@ -73,12 +73,23 @@ def request_detail(request: HttpRequest, request_id: int) -> HttpResponse:
     documents = req.documents.all()
     status_history = req.status_history.all()
     
+    # Get available lecturers for forwarding
+    available_lecturers = []
+    can_forward_to_lecturer = False
+    
+    if req.course:
+        # Get lecturers assigned to this course
+        available_lecturers = req.course.lecturers.filter(is_active=True)
+        can_forward_to_lecturer = available_lecturers.exists()
+    
     context = {
         "req": req,
         "notes": notes,
         "missing_docs": missing_docs,
         "documents": documents,
         "status_history": status_history,
+        "available_lecturers": available_lecturers,
+        "can_forward_to_lecturer": can_forward_to_lecturer,
     }
     return render(request, "staff/request_detail.html", context)
 
@@ -175,25 +186,61 @@ def send_to_lecturer(request: HttpRequest, request_id: int) -> HttpResponse:
         messages.error(request, "Cannot forward: there are pending missing documents.")
         return redirect("staff:request_detail", request_id=req.id)
     
-    req.status = Request.STATUS_SENT_TO_LECTURER
-    req.save()
+    # Check if request has a course
+    if not req.course:
+        messages.error(request, "Cannot forward to lecturer: this request has no course assigned. Please forward to HOD instead.")
+        return redirect("staff:request_detail", request_id=req.id)
     
-    StatusHistory.objects.create(
-        request=req,
-        status=Request.STATUS_SENT_TO_LECTURER,
-        description="Request forwarded to lecturer for review.",
-        role=StatusHistory.ROLE_STAFF,
-        changed_by=request.user,
-    )
+    # Get lecturers assigned to this course
+    available_lecturers = req.course.lecturers.filter(is_active=True)
+    if not available_lecturers.exists():
+        messages.error(request, "Cannot forward to lecturer: no lecturers are assigned to this course. Please forward to HOD instead.")
+        return redirect("staff:request_detail", request_id=req.id)
     
-    # Notify student
-    Notification.objects.create(
-        user=req.student,
-        request=req,
-        message="Your request has been forwarded to a lecturer for review."
-    )
+    if request.method == "POST":
+        lecturer_id = request.POST.get("lecturer_id")
+        
+        if not lecturer_id:
+            messages.error(request, "Please select a lecturer.")
+            return redirect("staff:request_detail", request_id=req.id)
+        
+        try:
+            lecturer = available_lecturers.get(id=lecturer_id)
+        except User.DoesNotExist:
+            messages.error(request, "Invalid lecturer selected.")
+            return redirect("staff:request_detail", request_id=req.id)
+        
+        req.status = Request.STATUS_SENT_TO_LECTURER
+        req.assigned_lecturer = lecturer
+        req.save()
+        
+        StatusHistory.objects.create(
+            request=req,
+            status=Request.STATUS_SENT_TO_LECTURER,
+            description=f"Request forwarded to {lecturer.get_full_name()} for review.",
+            role=StatusHistory.ROLE_STAFF,
+            changed_by=request.user,
+        )
+        
+        # Notify the assigned lecturer
+        Notification.objects.create(
+            user=lecturer,
+            request=req,
+            message=f"A new request has been assigned to you: {req.title}"
+        )
+        
+        # Notify student
+        Notification.objects.create(
+            user=req.student,
+            request=req,
+            message=f"Your request has been forwarded to {lecturer.get_full_name()} for review."
+        )
+        
+        messages.success(request, f"Request sent to {lecturer.get_full_name()}.")
+        return redirect("staff:request_detail", request_id=req.id)
     
-    messages.success(request, "Request sent to lecturer.")
+    # GET request - should not happen, redirect back
+    messages.error(request, "Invalid request method.")
     return redirect("staff:request_detail", request_id=req.id)
 
 

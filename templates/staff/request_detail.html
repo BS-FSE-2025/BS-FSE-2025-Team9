@@ -218,6 +218,13 @@
             </div>
         </div>
         
+        {% if req.course %}
+        <div class="detail-item" style="margin-bottom: 1rem;">
+            <div class="detail-label">Course</div>
+            <div class="detail-value">{{ req.course.code }} - {{ req.course.name }}</div>
+        </div>
+        {% endif %}
+        
         <div class="detail-item">
             <div class="detail-label" style="margin-bottom: 0.5rem;">Description</div>
             <div class="description-box">{{ req.description }}</div>
@@ -225,10 +232,27 @@
         
         {% if req.status in 'new,in_progress,needs_info' %}
         <div class="action-buttons">
-            <form action="{% url 'staff:send_to_lecturer' req.id %}" method="post">
+            {% if can_forward_to_lecturer %}
+            <form action="{% url 'staff:send_to_lecturer' req.id %}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
                 {% csrf_token %}
+                <select name="lecturer_id" class="form-control" style="width: auto; min-width: 200px;" required>
+                    <option value="">Select Lecturer...</option>
+                    {% for lecturer in available_lecturers %}
+                    <option value="{{ lecturer.id }}">{{ lecturer.get_full_name }}</option>
+                    {% endfor %}
+                </select>
                 <button type="submit" class="btn btn-primary">Send to Lecturer</button>
             </form>
+            {% else %}
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-muted); font-size: 0.875rem;">
+                {% if not req.course %}
+                <span>⚠️ No course assigned - cannot forward to lecturer</span>
+                {% else %}
+                <span>⚠️ No lecturers assigned to this course</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            
             <form action="{% url 'staff:send_to_hod' req.id %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-warning">Send to HOD</button>

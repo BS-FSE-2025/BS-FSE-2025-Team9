@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from .models import User, VerificationCode
+from requests_unified.models import Degree
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -28,6 +29,8 @@ def signup(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         return redirect("redirect_to_dashboard")
     
+    # Get available degrees
+    degrees = Degree.objects.filter(is_active=True).order_by('name')
     form_data = {}
     
     if request.method == "POST":
@@ -35,7 +38,7 @@ def signup(request: HttpRequest) -> HttpResponse:
         last_name = request.POST.get("last_name", "").strip()
         email = request.POST.get("email", "").strip().lower()
         student_id = request.POST.get("student_id", "").strip()
-        department = request.POST.get("department", "").strip()
+        degree_id = request.POST.get("degree", "").strip()
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
         
@@ -44,7 +47,7 @@ def signup(request: HttpRequest) -> HttpResponse:
             "last_name": last_name,
             "email": email,
             "student_id": student_id,
-            "department": department,
+            "degree_id": degree_id,
         }
         
         # Validation
@@ -66,6 +69,16 @@ def signup(request: HttpRequest) -> HttpResponse:
         elif User.objects.filter(student_id=student_id).exists():
             errors.append("This Student ID is already registered.")
         
+        # Validate degree (REQUIRED for students)
+        selected_degree = None
+        if not degree_id:
+            errors.append("Please select a degree program.")
+        else:
+            try:
+                selected_degree = Degree.objects.get(id=degree_id, is_active=True)
+            except Degree.DoesNotExist:
+                errors.append("Please select a valid degree program.")
+        
         # Password validation
         if len(password) < 8:
             errors.append("Password must be at least 8 characters long.")
@@ -84,7 +97,8 @@ def signup(request: HttpRequest) -> HttpResponse:
         if errors:
             return render(request, "core/signup.html", {
                 "error": " ".join(errors),
-                "form_data": form_data
+                "form_data": form_data,
+                "degrees": degrees,
             })
         
         # Create user
@@ -104,13 +118,13 @@ def signup(request: HttpRequest) -> HttpResponse:
             last_name=last_name,
             role="student",
             student_id=student_id,
-            department=department or None,
+            degree=selected_degree,
         )
         
         messages.success(request, "Account created successfully! Please sign in.")
         return redirect("core:login")
     
-    return render(request, "core/signup.html", {"form_data": form_data})
+    return render(request, "core/signup.html", {"form_data": form_data, "degrees": degrees})
 
 
 def logout_view(request: HttpRequest) -> HttpResponse:

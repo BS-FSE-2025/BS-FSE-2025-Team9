@@ -4,6 +4,57 @@ from django.conf import settings
 from django.utils import timezone
 
 
+class Degree(models.Model):
+    """
+    Academic degree programs (e.g., Software Engineering, Computer Science).
+    Students are enrolled in a degree, and courses belong to one or more degrees.
+    """
+    name = models.CharField(max_length=100, unique=True)  # e.g., "Software Engineering"
+    code = models.CharField(max_length=20, unique=True)   # e.g., "SE"
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['name']
+    
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+
+class Course(models.Model):
+    """
+    Academic courses that belong to degree programs and are taught by lecturers.
+    - A course can belong to multiple degrees
+    - A course can have multiple lecturers
+    - When creating a course, at least one degree is required
+    - Lecturers are optional (can be assigned later)
+    """
+    code = models.CharField(max_length=20, unique=True)   # e.g., "CS101"
+    name = models.CharField(max_length=200)
+    degrees = models.ManyToManyField(
+        Degree,
+        related_name='courses',
+        help_text="Degree programs that include this course"
+    )
+    lecturers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='taught_courses',
+        blank=True,
+        limit_choices_to={'role': 'lecturer'},
+        help_text="Lecturers who teach this course"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['code']
+    
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+
 class Request(models.Model):
     """
     Unified Request model combining all fields from the 4 branches.
@@ -87,7 +138,17 @@ class Request(models.Model):
         default=PRIORITY_MEDIUM,
     )
     
-    # Optional course info (for Study Approval, Appeal)
+    # Course reference (required for Study Approval, Appeal; optional for General)
+    course = models.ForeignKey(
+        'Course',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='requests',
+        help_text="The course this request is related to"
+    )
+    
+    # Legacy fields (kept for backwards compatibility with existing data)
     course_name = models.CharField(max_length=150, blank=True)
     related_course = models.CharField(max_length=255, blank=True)
     
@@ -105,7 +166,7 @@ class Request(models.Model):
         null=True,
         blank=True,
         related_name='staff_assigned_requests',
-        limit_choices_to={'role': 'staff'},
+        limit_choices_to={'role': 'secretary'},
     )
     
     assigned_lecturer = models.ForeignKey(

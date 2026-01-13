@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from django.db.models import Q
+
 from core.models import User
 from requests_unified.models import (
     Request, StatusHistory, Notification, ApprovalLog, Comment
@@ -28,15 +30,22 @@ def lecturer_required(view_func):
 @lecturer_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Lecturer dashboard - view assigned/pending requests."""
+    user = request.user
     status_filter = request.GET.get("status", "all")
     
-    # Get requests sent to lecturers or assigned to this lecturer
+    # Get courses taught by this lecturer
+    taught_courses = user.taught_courses.all()
+    
+    # Get requests that are:
+    # 1. Sent to lecturer status AND in one of their courses, OR
+    # 2. Explicitly assigned to this lecturer
     requests_qs = Request.objects.filter(
-        status__in=[
-            Request.STATUS_SENT_TO_LECTURER,
-            Request.STATUS_NEEDS_INFO,
-        ]
-    ).order_by("-created_at")
+        Q(
+            status__in=[Request.STATUS_SENT_TO_LECTURER, Request.STATUS_NEEDS_INFO],
+            course__in=taught_courses
+        ) |
+        Q(assigned_lecturer=user)
+    ).distinct().order_by("-created_at")
     
     # Count statistics
     total = requests_qs.count()
@@ -58,6 +67,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "pending": pending,
         "needs_info": needs_info,
         "status_filter": status_filter,
+        "taught_courses": taught_courses,
     }
     return render(request, "lecturers/dashboard.html", context)
 

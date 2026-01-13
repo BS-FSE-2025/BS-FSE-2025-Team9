@@ -266,16 +266,16 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label" for="department">Department</label>
-                        <select name="department" id="department" class="form-control">
-                            <option value="">Select department</option>
-                            <option value="Software Engineering" {% if form_data.department == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
-                            <option value="Computer Science" {% if form_data.department == 'Computer Science' %}selected{% endif %}>Computer Science</option>
-                            <option value="Electrical Engineering" {% if form_data.department == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
-                            <option value="Mechanical Engineering" {% if form_data.department == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
-                            <option value="Civil Engineering" {% if form_data.department == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
-                            <option value="Industrial Engineering" {% if form_data.department == 'Industrial Engineering' %}selected{% endif %}>Industrial Engineering</option>
+                        <label class="form-label" for="degree">Degree Program <span style="color: var(--color-error);">*</span></label>
+                        <select name="degree" id="degree" class="form-control" required>
+                            <option value="">Select your degree program</option>
+                            {% for deg in degrees %}
+                            <option value="{{ deg.id }}" {% if form_data.degree_id == deg.id|stringformat:"i" %}selected{% endif %}>{{ deg.code }} - {{ deg.name }}</option>
+                            {% empty %}
+                            <option value="" disabled>No degree programs available</option>
+                            {% endfor %}
                         </select>
+                        <p class="form-hint">Select the degree program you are enrolled in</p>
                     </div>
                     
                     <div class="form-group">

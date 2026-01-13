@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from core.models import User
 from requests_unified.models import (
-    Request, StatusHistory, Notification, RequestDocument
+    Request, StatusHistory, Notification, RequestDocument, Course
 )
 
 
@@ -88,32 +88,48 @@ def _generate_request_id() -> str:
 @transaction.atomic
 def submit_request(request: HttpRequest, request_type: str = None) -> HttpResponse:
     """Submit a new request."""
+    user = request.user
+    
+    # Get courses for the student's degree
+    if user.degree:
+        courses = Course.objects.filter(degrees=user.degree, is_active=True).order_by('code')
+    else:
+        courses = Course.objects.filter(is_active=True).order_by('code')
+    
     if request.method == "POST":
         title = request.POST.get("title", "")
         description = request.POST.get("description", "")
         request_type_value = request.POST.get("request_type", "General")
         priority = request.POST.get("priority", "medium")
+        course_id = request.POST.get("course", "")
+        
+        # Get selected course
+        selected_course = None
+        if course_id:
+            try:
+                selected_course = Course.objects.get(id=course_id)
+            except Course.DoesNotExist:
+                pass
         
         if request_type_value == "Study Approval":
-            course_name = request.POST.get("course_name", "")
-            course_code = request.POST.get("course_code", "")
             semester = request.POST.get("semester", "")
             reason = request.POST.get("reason", "")
             
+            course_display = f"{selected_course.code} - {selected_course.name}" if selected_course else "Not specified"
             if not title:
-                title = f"Study Approval - {course_name}"
-            description = f"Course Name: {course_name}\nCourse Code: {course_code}\nSemester: {semester}\nReason: {reason}"
+                title = f"Study Approval - {course_display}"
+            description = f"Course: {course_display}\nSemester: {semester}\nReason: {reason}"
             
         elif request_type_value == "Appeal":
-            course_name = request.POST.get("course_name", "")
             grade_received = request.POST.get("grade_received", "")
             expected_grade = request.POST.get("expected_grade", "")
             reason = request.POST.get("reason", "")
             evidence = request.POST.get("evidence", "")
             
+            course_display = f"{selected_course.code} - {selected_course.name}" if selected_course else "Not specified"
             if not title:
-                title = f"Grade Appeal - {course_name}"
-            description = f"Course Name: {course_name}\nGrade Received: {grade_received}\nExpected Grade: {expected_grade}\nReason: {reason}\nSupporting Evidence: {evidence}"
+                title = f"Grade Appeal - {course_display}"
+            description = f"Course: {course_display}\nGrade Received: {grade_received}\nExpected Grade: {expected_grade}\nReason: {reason}\nSupporting Evidence: {evidence}"
             
         elif request_type_value == "Postponement":
             semester = request.POST.get("semester", "")
@@ -132,7 +148,11 @@ def submit_request(request: HttpRequest, request_type: str = None) -> HttpRespon
             
             if not title:
                 title = subject or "General Request"
-            description = f"Category: {category}\nDescription: {desc}"
+            
+            if selected_course:
+                description = f"Course: {selected_course.code} - {selected_course.name}\nCategory: {category}\nDescription: {desc}"
+            else:
+                description = f"Category: {category}\nDescription: {desc}"
         
         new_request = Request.objects.create(
             student=request.user,
@@ -140,7 +160,8 @@ def submit_request(request: HttpRequest, request_type: str = None) -> HttpRespon
             request_type=request_type_value,
             description=description,
             priority=priority,
-            status=Request.STATUS_NEW
+            status=Request.STATUS_NEW,
+            course=selected_course,
         )
         
         StatusHistory.objects.create(
@@ -184,6 +205,7 @@ def submit_request(request: HttpRequest, request_type: str = None) -> HttpRespon
     
     context = {
         "initial_data": initial_data,
+        "courses": courses,
     }
     return render(request, "students/request_form.html", context)
 

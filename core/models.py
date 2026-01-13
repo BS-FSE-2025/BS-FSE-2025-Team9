@@ -44,6 +44,16 @@ class User(AbstractUser):
         null=True,
     )
     
+    # For students - their enrolled degree program
+    degree = models.ForeignKey(
+        'requests_unified.Degree',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='students',
+        help_text="The degree program the student is enrolled in."
+    )
+    
     # For students - unique student ID
     student_id = models.CharField(
         max_length=32,

@@ -201,25 +201,25 @@
 </div>
 
 <div class="quick-actions">
-    <a href="{% url 'management:user_add' %}" class="action-card">
-        <div class="action-icon">👤</div>
-        <div class="action-content">
-            <h3>Add New User</h3>
-            <p>Create a new staff account</p>
-        </div>
-    </a>
     <a href="{% url 'management:user_list' %}" class="action-card">
-        <div class="action-icon">📋</div>
+        <div class="action-icon">👤</div>
         <div class="action-content">
             <h3>Manage Users</h3>
             <p>View and edit all users</p>
         </div>
     </a>
-    <a href="{% url 'admin:index' %}" class="action-card">
-        <div class="action-icon">⚙️</div>
+    <a href="{% url 'management:degree_list' %}" class="action-card">
+        <div class="action-icon">🎓</div>
         <div class="action-content">
-            <h3>Django Admin</h3>
-            <p>Advanced system settings</p>
+            <h3>Manage Degrees</h3>
+            <p>Degree programs and enrollment</p>
+        </div>
+    </a>
+    <a href="{% url 'management:course_list' %}" class="action-card">
+        <div class="action-icon">📚</div>
+        <div class="action-content">
+            <h3>Manage Courses</h3>
+            <p>Courses and lecturer assignments</p>
         </div>
     </a>
 </div>
