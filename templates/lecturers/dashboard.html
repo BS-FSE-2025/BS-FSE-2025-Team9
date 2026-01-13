@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Lecturer Dashboard - SCE Request Portal{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Lecturer Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: #3b82f6;">{{ pending }}</div>
+        <div class="stat-label">Pending Review</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: #f59e0b;">{{ needs_info }}</div>
+        <div class="stat-label">Needs Info</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Requests for Review</h2>
+    </div>
+    
+    <div class="filter-bar">
+        <label>Filter:</label>
+        <select onchange="window.location.href='?status=' + this.value">
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="needs_info" {% if status_filter == 'needs_info' %}selected{% endif %}>Needs Info</option>
+        </select>
+    </div>
+    
+    {% if requests %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Student</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td><strong>{{ req.request_id }}</strong></td>
+                <td>{{ req.student.get_full_name|default:req.student.email }}</td>
+                <td>{{ req.title|truncatechars:40 }}</td>
+                <td>{{ req.request_type }}</td>
+                <td><span class="badge badge--{{ req.status }}">{{ req.get_status_display }}</span></td>
+                <td><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></td>
+                <td>{{ req.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <a href="{% url 'lecturers:request_detail' req.id %}" class="btn btn-primary">Review</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">✅</div>
+        <h3>No requests to review</h3>
+        <p>All requests have been processed.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

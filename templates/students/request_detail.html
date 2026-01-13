@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Request {{ request_obj.request_id }} - SCE Request Portal{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'students:dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="card-title">{{ request_obj.title }}</h2>
+            <small style="color: #6b7280;">{{ request_obj.request_id }}</small>
+        </div>
+        <span class="badge badge--{{ request_obj.status }}">{{ request_obj.get_status_display }}</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <strong style="color: #6b7280;">Type:</strong>
+            <p>{{ request_obj.request_type }}</p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Priority:</strong>
+            <p><span class="badge badge--{{ request_obj.priority }}">{{ request_obj.get_priority_display }}</span></p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Submitted:</strong>
+            <p>{{ request_obj.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Last Updated:</strong>
+            <p>{{ request_obj.updated_at|date:"M d, Y H:i" }}</p>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 1.5rem;">
+        <strong style="color: #6b7280;">Description:</strong>
+        <p style="white-space: pre-wrap; margin-top: 0.5rem;">{{ request_obj.description }}</p>
+    </div>
+    
+    {% if request_obj.lecturer_feedback %}
+    <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+        <strong style="color: #6b7280;">Lecturer Feedback:</strong>
+        <p style="margin-top: 0.5rem;">{{ request_obj.lecturer_feedback }}</p>
+    </div>
+    {% endif %}
+    
+    {% if request_obj.final_notes %}
+    <div style="background: #dbeafe; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+        <strong style="color: #1e40af;">Final Notes from Department Head:</strong>
+        <p style="margin-top: 0.5rem;">{{ request_obj.final_notes }}</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if documents %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Attached Documents</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for doc in documents %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+            <a href="{{ doc.file.url }}" target="_blank">📄 {{ doc.get_filename }}</a>
+            <small style="color: #6b7280;"> - {{ doc.uploaded_at|date:"M d, Y" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Status History</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for history in status_history %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <span class="badge badge--{{ history.status }}">{{ history.get_status_display }}</span>
+            <p style="margin: 0.5rem 0 0 0;">{{ history.description }}</p>
+            <small style="color: #6b7280;">{{ history.created_at|date:"M d, Y H:i" }} - {{ history.get_role_display }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% if staff_notes %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Staff Notes</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for note in staff_notes %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <p>{{ note.note }}</p>
+            <small style="color: #6b7280;">{{ note.created_at|date:"M d, Y H:i" }} - {{ note.get_role_display }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

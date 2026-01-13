@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Review Request {{ req.request_id }} - SCE Request Portal{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'head_of_dept:dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="card-title">{{ req.title }}</h2>
+            <small style="color: #6b7280;">{{ req.request_id }}</small>
+        </div>
+        <span class="badge badge--{{ req.status }}">{{ req.get_status_display }}</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <strong style="color: #6b7280;">Student:</strong>
+            <p>{{ req.student.get_full_name|default:req.student.email }}</p>
+            <small style="color: #9ca3af;">{{ req.student.email }}</small>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Type:</strong>
+            <p>{{ req.request_type }}</p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Priority:</strong>
+            <p><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Submitted:</strong>
+            <p>{{ req.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 1.5rem;">
+        <strong style="color: #6b7280;">Description:</strong>
+        <p style="white-space: pre-wrap; margin-top: 0.5rem;">{{ req.description }}</p>
+    </div>
+    
+    {% if req.lecturer_feedback %}
+    <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+        <strong style="color: #6b7280;">Lecturer Feedback:</strong>
+        <p style="margin-top: 0.5rem;">{{ req.lecturer_feedback }}</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if documents %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Attached Documents</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for doc in documents %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+            <a href="{{ doc.file.url }}" target="_blank">📄 {{ doc.get_filename }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if staff_notes %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Staff Notes</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for note in staff_notes %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <p>{{ note.note }}</p>
+            <small style="color: #6b7280;">{{ note.created_at|date:"M d, Y H:i" }} - {{ note.get_role_display }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Final Decision Form -->
+{% if req.status == 'sent_to_hod' %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Final Decision</h3>
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label" for="notes">Final Notes (visible to student)</label>
+        <textarea id="notes" class="form-control" rows="3" placeholder="Add your final notes here..."></textarea>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <form action="{% url 'head_of_dept:approve' req.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="notes" id="approve-notes">
+            <button type="submit" class="btn btn-success" onclick="document.getElementById('approve-notes').value = document.getElementById('notes').value;">✓ Approve Request</button>
+        </form>
+        
+        <form action="{% url 'head_of_dept:reject' req.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="notes" id="reject-notes">
+            <button type="submit" class="btn btn-danger" onclick="document.getElementById('reject-notes').value = document.getElementById('notes').value;">✗ Reject Request</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add Final Notes (for already processed requests) -->
+{% if req.status in 'approved,rejected' %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Final Notes</h3>
+    </div>
+    {% if req.final_notes %}
+    <p style="margin-bottom: 1rem;">{{ req.final_notes }}</p>
+    {% endif %}
+    <form action="{% url 'head_of_dept:add_notes' req.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea name="notes" class="form-control" rows="2" placeholder="Update final notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Notes</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- Add Comment -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Add Comment</h3>
+    </div>
+    <form action="{% url 'head_of_dept:add_comment' req.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline">Add Comment</button>
+    </form>
+</div>
+
+{% if comments %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Comments</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for comment in comments %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <p>{{ comment.comment }}</p>
+            <small style="color: #6b7280;">{{ comment.author.get_full_name }} - {{ comment.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if approval_logs %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Approval History</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for log in approval_logs %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <span class="badge badge--{% if log.action == 'approved' %}approved{% elif log.action == 'rejected' %}rejected{% else %}in_progress{% endif %}">{{ log.get_action_display }}</span>
+            <strong>{{ log.approver.get_full_name }}</strong>
+            {% if log.notes %}<p style="margin: 0.5rem 0 0 0;">{{ log.notes }}</p>{% endif %}
+            <small style="color: #6b7280;">{{ log.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Status History</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for history in status_history %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <span class="badge badge--{{ history.status }}">{{ history.get_status_display }}</span>
+            <p style="margin: 0.5rem 0 0 0;">{{ history.description }}</p>
+            <small style="color: #6b7280;">{{ history.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

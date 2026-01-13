@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Head of Department Dashboard - SCE Request Portal{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Department Head Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: #f59e0b;">{{ pending }}</div>
+        <div class="stat-label">Pending Approval</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: #10b981;">{{ approved }}</div>
+        <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: #ef4444;">{{ rejected }}</div>
+        <div class="stat-label">Rejected</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="card-title">Requests Awaiting Final Approval</h2>
+        <a href="{% url 'head_of_dept:statistics' %}" class="btn btn-outline">View Statistics</a>
+    </div>
+    
+    <div class="filter-bar">
+        <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <div>
+                <label>Type:</label>
+                <select name="type" onchange="this.form.submit()">
+                    <option value="">All Types</option>
+                    {% for value, label in request_types %}
+                    <option value="{{ value }}" {% if request_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>From:</label>
+                <input type="date" name="date_from" value="{{ date_from }}">
+            </div>
+            <div>
+                <label>To:</label>
+                <input type="date" name="date_to" value="{{ date_to }}">
+            </div>
+            <button type="submit" class="btn btn-outline">Apply Filters</button>
+            <a href="{% url 'head_of_dept:dashboard' %}" class="btn btn-outline">Clear</a>
+        </form>
+    </div>
+    
+    {% if requests %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Student</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td><strong>{{ req.request_id }}</strong></td>
+                <td>{{ req.student.get_full_name|default:req.student.email }}</td>
+                <td>{{ req.title|truncatechars:40 }}</td>
+                <td>{{ req.request_type }}</td>
+                <td><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></td>
+                <td>{{ req.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <a href="{% url 'head_of_dept:request_detail' req.id %}" class="btn btn-primary">Review</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">✅</div>
+        <h3>No requests pending</h3>
+        <p>All requests have been processed.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

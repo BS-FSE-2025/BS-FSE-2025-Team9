@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code - SCE Request Portal</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .verify-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .verify-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .verify-header h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .verify-header p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .email-display {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .code-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .code-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn-verify {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-verify:hover {
+            background: var(--primary-dark);
+        }
+        
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
+        .back-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-icon">🔐</div>
+        <div class="verify-header">
+            <h1>Enter Verification Code</h1>
+            <p>We sent a 6-digit code to:</p>
+            <span class="email-display">{{ email }}</span>
+        </div>
+        
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <input type="text" name="code" class="code-input" maxlength="6" placeholder="000000" pattern="[0-9]{6}" required autofocus>
+            </div>
+            
+            <button type="submit" class="btn-verify">Verify</button>
+        </form>
+        
+        <a href="{% url 'login' %}" class="back-link">← Back to login</a>
+    </div>
+</body>
+</html>

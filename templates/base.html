@@ -3,13 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Request Management System{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{% block title %}SCE Request Portal{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gray-100);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-role {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-600);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .badge--new { background: #dbeafe; color: #1e40af; }
+        .badge--in_progress { background: #fef3c7; color: #92400e; }
+        .badge--sent_to_lecturer { background: #e0e7ff; color: #3730a3; }
+        .badge--sent_to_hod { background: #fce7f3; color: #9d174d; }
+        .badge--needs_info { background: #fed7aa; color: #9a3412; }
+        .badge--approved { background: #d1fae5; color: #065f46; }
+        .badge--rejected { background: #fee2e2; color: #991b1b; }
+        
+        .badge--high { background: #fee2e2; color: #991b1b; }
+        .badge--medium { background: #fef3c7; color: #92400e; }
+        .badge--low { background: #d1fae5; color: #065f46; }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .table th {
+            background: var(--gray-100);
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .table tr:hover {
+            background: var(--gray-100);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        
+        .messages {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-600);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-bar select,
+        .filter-bar input {
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    {% block content %}{% endblock %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <nav class="navbar">
+        <a href="{% url 'redirect_to_dashboard' %}" class="navbar-brand">SCE Request Portal</a>
+        
+        {% if user.is_authenticated %}
+        <div class="navbar-nav">
+            {% if user.role == 'student' %}
+                <a href="{% url 'students:dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'students:submit_request' %}" class="nav-link">New Request</a>
+                <a href="{% url 'students:profile_edit' %}" class="nav-link">Profile</a>
+            {% elif user.role == 'staff' %}
+                <a href="{% url 'staff:dashboard' %}" class="nav-link">Dashboard</a>
+            {% elif user.role == 'lecturer' %}
+                <a href="{% url 'lecturers:dashboard' %}" class="nav-link">Dashboard</a>
+            {% elif user.role == 'head_of_dept' %}
+                <a href="{% url 'head_of_dept:dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'head_of_dept:statistics' %}" class="nav-link">Statistics</a>
+            {% endif %}
+            
+            <div class="user-info">
+                <span class="user-role">{{ user.get_role_display }}</span>
+                <span>{{ user.get_full_name|default:user.email }}</span>
+                <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
+            </div>
+        </div>
+        {% endif %}
+    </nav>
+    
+    <div class="container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

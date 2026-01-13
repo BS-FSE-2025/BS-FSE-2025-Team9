@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Review Request {{ req.request_id }} - SCE Request Portal{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'staff:dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="card-title">{{ req.title }}</h2>
+            <small style="color: #6b7280;">{{ req.request_id }}</small>
+        </div>
+        <span class="badge badge--{{ req.status }}">{{ req.get_status_display }}</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <strong style="color: #6b7280;">Student:</strong>
+            <p>{{ req.student.get_full_name|default:req.student.email }}</p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Type:</strong>
+            <p>{{ req.request_type }}</p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Priority:</strong>
+            <p><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></p>
+        </div>
+        <div>
+            <strong style="color: #6b7280;">Submitted:</strong>
+            <p>{{ req.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 1.5rem;">
+        <strong style="color: #6b7280;">Description:</strong>
+        <p style="white-space: pre-wrap; margin-top: 0.5rem;">{{ req.description }}</p>
+    </div>
+    
+    <!-- Actions -->
+    {% if req.status in 'new,in_progress,needs_info' %}
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+        <form action="{% url 'staff:send_to_lecturer' req.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Send to Lecturer</button>
+        </form>
+        <form action="{% url 'staff:send_to_hod' req.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Send to HOD</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+{% if documents %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Attached Documents</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for doc in documents %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+            <a href="{{ doc.file.url }}" target="_blank">📄 {{ doc.get_filename }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Add Note -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Add Note</h3>
+    </div>
+    <form action="{% url 'staff:add_note' req.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea name="text" class="form-control" rows="3" placeholder="Add a note about this request..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Note</button>
+    </form>
+</div>
+
+<!-- Request Missing Documents -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Request Missing Documents</h3>
+    </div>
+    <form action="{% url 'staff:request_docs' req.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="doc_name">Document Name *</label>
+            <input type="text" name="doc_name" id="doc_name" class="form-control" placeholder="e.g., Medical Certificate">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="instructions">Instructions</label>
+            <textarea name="instructions" id="instructions" class="form-control" rows="2" placeholder="Instructions for the student..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning">Request Document</button>
+    </form>
+</div>
+
+{% if missing_docs %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Missing Documents</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for doc in missing_docs %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>{{ doc.doc_name }}</strong>
+                {% if doc.instructions %}<p style="color: #6b7280; margin: 0.25rem 0 0 0;">{{ doc.instructions }}</p>{% endif %}
+                <small style="color: #9ca3af;">Requested: {{ doc.created_at|date:"M d, Y" }}</small>
+            </div>
+            {% if doc.resolved %}
+                <span class="badge badge--approved">Received</span>
+            {% else %}
+                <form action="{% url 'staff:resolve_doc' doc.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Mark Received</button>
+                </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if notes %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Notes</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for note in notes %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <p>{{ note.note }}</p>
+            <small style="color: #6b7280;">{{ note.author.get_full_name }} - {{ note.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Status History</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        {% for history in status_history %}
+        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+            <span class="badge badge--{{ history.status }}">{{ history.get_status_display }}</span>
+            <p style="margin: 0.5rem 0 0 0;">{{ history.description }}</p>
+            <small style="color: #6b7280;">{{ history.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

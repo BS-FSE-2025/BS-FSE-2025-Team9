@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - SCE Request Portal{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h2 class="card-title">Edit Profile</h2>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+            <small style="color: #6b7280;">Email cannot be changed</small>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="first_name">First Name *</label>
+            <input type="text" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="last_name">Last Name *</label>
+            <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}" required>
+        </div>
+        
+        <hr style="margin: 2rem 0;">
+        
+        <h3 style="margin-bottom: 1rem;">Change Password (optional)</h3>
+        
+        <div class="form-group">
+            <label class="form-label" for="current_password">Current Password</label>
+            <input type="password" name="current_password" id="current_password" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="new_password">New Password</label>
+            <input type="password" name="new_password" id="new_password" class="form-control">
+            <small style="color: #6b7280;">Must be longer than 6 characters, include uppercase, lowercase, and '!'</small>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="confirm_password">Confirm New Password</label>
+            <input type="password" name="confirm_password" id="confirm_password" class="form-control">
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{% url 'students:dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

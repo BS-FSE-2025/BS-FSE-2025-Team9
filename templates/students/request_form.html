@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Submit Request - SCE Request Portal{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <div class="card-header">
+        <h2 class="card-title">Submit New Request</h2>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label" for="request_type">Request Type *</label>
+            <select name="request_type" id="request_type" class="form-control" required onchange="toggleFields()">
+                <option value="General" {% if initial_data.request_type == 'General' %}selected{% endif %}>General</option>
+                <option value="Study Approval" {% if initial_data.request_type == 'Study Approval' %}selected{% endif %}>Study Approval</option>
+                <option value="Appeal" {% if initial_data.request_type == 'Appeal' %}selected{% endif %}>Appeal</option>
+                <option value="Postponement" {% if initial_data.request_type == 'Postponement' %}selected{% endif %}>Postponement</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="title">Title *</label>
+            <input type="text" name="title" id="title" class="form-control" placeholder="Brief title for your request" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="priority">Priority</label>
+            <select name="priority" id="priority" class="form-control">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        
+        <!-- General fields -->
+        <div id="general-fields">
+            <div class="form-group">
+                <label class="form-label" for="category">Category</label>
+                <input type="text" name="category" id="category" class="form-control" placeholder="e.g., Registration, Certificate, etc.">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="description">Description *</label>
+                <textarea name="description" id="description" class="form-control" rows="4" placeholder="Describe your request in detail..." required></textarea>
+            </div>
+        </div>
+        
+        <!-- Study Approval fields -->
+        <div id="study-approval-fields" style="display: none;">
+            <div class="form-group">
+                <label class="form-label" for="course_name">Course Name *</label>
+                <input type="text" name="course_name" id="course_name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="course_code">Course Code</label>
+                <input type="text" name="course_code" id="course_code" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="semester">Semester</label>
+                <input type="text" name="semester" id="semester" class="form-control" placeholder="e.g., Spring 2026">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reason">Reason *</label>
+                <textarea name="reason" id="reason" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+        
+        <!-- Appeal fields -->
+        <div id="appeal-fields" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Course Name *</label>
+                <input type="text" name="course_name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="grade_received">Grade Received</label>
+                <input type="text" name="grade_received" id="grade_received" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="expected_grade">Expected Grade</label>
+                <input type="text" name="expected_grade" id="expected_grade" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reason for Appeal *</label>
+                <textarea name="reason" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="evidence">Supporting Evidence</label>
+                <textarea name="evidence" id="evidence" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+        
+        <!-- Postponement fields -->
+        <div id="postponement-fields" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Semester to Postpone *</label>
+                <input type="text" name="semester" class="form-control" placeholder="e.g., Spring 2026">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reason_type">Reason Type</label>
+                <select name="reason_type" id="reason_type" class="form-control">
+                    <option value="Medical">Medical</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Financial">Financial</option>
+                    <option value="Military">Military Service</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="explanation">Explanation *</label>
+                <textarea name="explanation" id="explanation" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="return_date">Expected Return Date</label>
+                <input type="date" name="return_date" id="return_date" class="form-control">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="file">Attachments (optional)</label>
+            <input type="file" name="file" id="file" class="form-control" multiple>
+            <small style="color: #6b7280;">You can upload multiple files (PDF, images, documents)</small>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+            <a href="{% url 'students:dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleFields() {
+    const type = document.getElementById('request_type').value;
+    
+    // Hide all sections and remove required attributes
+    const sections = ['general-fields', 'study-approval-fields', 'appeal-fields', 'postponement-fields'];
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        section.style.display = 'none';
+        // Remove required from all inputs/textareas in hidden sections
+        section.querySelectorAll('input, textarea').forEach(el => el.removeAttribute('required'));
+    });
+    
+    // Show the active section and add required to its mandatory fields
+    let activeSection = null;
+    if (type === 'General') {
+        activeSection = document.getElementById('general-fields');
+        activeSection.style.display = 'block';
+        document.getElementById('description').setAttribute('required', '');
+    } else if (type === 'Study Approval') {
+        activeSection = document.getElementById('study-approval-fields');
+        activeSection.style.display = 'block';
+        activeSection.querySelector('[name="course_name"]').setAttribute('required', '');
+        activeSection.querySelector('[name="reason"]').setAttribute('required', '');
+    } else if (type === 'Appeal') {
+        activeSection = document.getElementById('appeal-fields');
+        activeSection.style.display = 'block';
+        activeSection.querySelector('[name="course_name"]').setAttribute('required', '');
+        activeSection.querySelectorAll('[name="reason"]').forEach(el => el.setAttribute('required', ''));
+    } else if (type === 'Postponement') {
+        activeSection = document.getElementById('postponement-fields');
+        activeSection.style.display = 'block';
+        activeSection.querySelector('[name="semester"]').setAttribute('required', '');
+        document.getElementById('explanation').setAttribute('required', '');
+    }
+}
+
+// Initialize on page load
+toggleFields();
+</script>
+{% endblock %}

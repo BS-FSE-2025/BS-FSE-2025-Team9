@@ -1,3 +1,8 @@
+"""
+Unified Django settings for Student Request Management System.
+Combines all 4 branches into one project.
+"""
+
 from pathlib import Path
 import ssl
 import smtplib
@@ -6,16 +11,18 @@ import smtplib
 # FIX SSL CERTIFICATE VERIFICATION ISSUE
 # ============================================
 ssl._create_default_https_context = ssl._create_unverified_context
-smtplib.SMTPContext = smtplib.ssl._create_unverified_context
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "dev-secret-key-change-me"
+SECRET_KEY = "dev-secret-key-change-me-in-production"
 
 DEBUG = True
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
+# ============================================
+# INSTALLED APPS - All unified apps
+# ============================================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -23,7 +30,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "students",
+    # Core apps
+    "core",  # User model with 2FA
+    "requests_unified",  # Request model and related models
+    # Role-specific apps
+    "students",  # Student portal
+    "staff",  # Staff dashboard
+    "lecturers",  # Lecturer dashboard
+    "head_of_dept",  # Department head dashboard
 ]
 
 MIDDLEWARE = [
@@ -56,6 +70,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "campus_requests.wsgi.application"
 
+# ============================================
+# DATABASE
+# ============================================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -63,6 +80,14 @@ DATABASES = {
     }
 }
 
+# ============================================
+# CUSTOM USER MODEL
+# ============================================
+AUTH_USER_MODEL = "core.User"
+
+# ============================================
+# PASSWORD VALIDATION
+# ============================================
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -72,46 +97,53 @@ AUTH_PASSWORD_VALIDATORS = [
         "OPTIONS": {"min_length": 7},
     },
     {
-        "NAME": "students.validators.StrongStudentPasswordValidator",
+        "NAME": "core.validators.StrongPasswordValidator",
     },
 ]
 
+# ============================================
+# AUTHENTICATION
+# ============================================
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "redirect_to_dashboard"
+LOGOUT_REDIRECT_URL = "login"
+
+# ============================================
+# INTERNATIONALIZATION
+# ============================================
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+TIME_ZONE = "Asia/Jerusalem"
 USE_I18N = True
-
 USE_TZ = True
 
-STATIC_URL = "static/"
+# ============================================
+# STATIC FILES
+# ============================================
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# ============================================
+# MEDIA FILES
+# ============================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ============================================
+# DEFAULT PRIMARY KEY
+# ============================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "students.Student"
-
-LOGIN_URL = "students:login"
-LOGIN_REDIRECT_URL = "students:dashboard"
-LOGOUT_REDIRECT_URL = "students:login"
-
-
 # ============================================
-# EMAIL CONFIGURATION - REAL EMAIL SENDING
+# EMAIL CONFIGURATION - REAL EMAIL SENDING FOR 2FA
 # ============================================
-
-# Gmail SMTP Settings with Custom Backend
-EMAIL_BACKEND = 'students.email_backend.CustomEmailBackend'
+# Use custom backend to bypass SSL certificate issues
+EMAIL_BACKEND = 'core.email_backend.CustomEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'saied442001@gmail.com'
-EMAIL_HOST_PASSWORD = 'bgphdwiuzmwlqpex'  # NO SPACES!
+EMAIL_HOST_PASSWORD = 'bgphdwiuzmwlqpex'  # App password
 DEFAULT_FROM_EMAIL = 'SCE Student Portal <saied442001@gmail.com>'
 EMAIL_TIMEOUT = 30
-
