@@ -1,112 +1,275 @@
 {% extends "base.html" %}
-{% block title %}Review Request {{ req.request_id }} - SCE Request Portal{% endblock %}
+{% block title %}Review Request {{ req.request_id }} - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    .back-link:hover {
+        color: var(--color-text);
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .request-id {
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .detail-item {
+        font-size: 0.875rem;
+    }
+    
+    .detail-label {
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    
+    .detail-value {
+        color: var(--color-text);
+        font-weight: 500;
+    }
+    
+    .description-box {
+        padding: 1rem;
+        background: var(--color-bg);
+        border-radius: var(--radius);
+        white-space: pre-wrap;
+        line-height: 1.7;
+    }
+    
+    .decision-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-success {
+        background: var(--color-success);
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #047857;
+    }
+    
+    .btn-danger {
+        background: var(--color-error);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+    
+    .btn-warning {
+        background: var(--color-warning);
+        color: white;
+    }
+    
+    .btn-warning:hover {
+        background: #b45309;
+    }
+    
+    .documents-list, .timeline {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .documents-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .documents-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .doc-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .doc-link:hover {
+        color: var(--color-accent);
+    }
+    
+    .timeline-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .timeline-item:last-child {
+        border-bottom: none;
+    }
+    
+    .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .timeline-description {
+        color: var(--color-text);
+        margin-bottom: 0.25rem;
+    }
+    
+    .timeline-meta {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 1rem;">
-    <a href="{% url 'lecturers:dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+<a href="{% url 'lecturers:dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ req.title }}</h1>
+        <div class="request-id">{{ req.request_id }}</div>
+    </div>
+    <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
 </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h2 class="card-title">{{ req.title }}</h2>
-            <small style="color: #6b7280;">{{ req.request_id }}</small>
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Student</div>
+                <div class="detail-value">{{ req.student.get_full_name|default:req.student.email }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Type</div>
+                <div class="detail-value">{{ req.request_type }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Priority</div>
+                <div class="detail-value"><span class="badge priority-{{ req.priority }}">{{ req.get_priority_display }}</span></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Submitted</div>
+                <div class="detail-value">{{ req.created_at|date:"M d, Y" }}</div>
+            </div>
         </div>
-        <span class="badge badge--{{ req.status }}">{{ req.get_status_display }}</span>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-        <div>
-            <strong style="color: #6b7280;">Student:</strong>
-            <p>{{ req.student.get_full_name|default:req.student.email }}</p>
+        
+        <div class="detail-item">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Description</div>
+            <div class="description-box">{{ req.description }}</div>
         </div>
-        <div>
-            <strong style="color: #6b7280;">Type:</strong>
-            <p>{{ req.request_type }}</p>
-        </div>
-        <div>
-            <strong style="color: #6b7280;">Priority:</strong>
-            <p><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></p>
-        </div>
-        <div>
-            <strong style="color: #6b7280;">Submitted:</strong>
-            <p>{{ req.created_at|date:"M d, Y H:i" }}</p>
-        </div>
-    </div>
-    
-    <div style="margin-bottom: 1.5rem;">
-        <strong style="color: #6b7280;">Description:</strong>
-        <p style="white-space: pre-wrap; margin-top: 0.5rem;">{{ req.description }}</p>
     </div>
 </div>
 
 {% if documents %}
-<div class="card">
+<div class="card" style="margin-bottom: 1.5rem;">
     <div class="card-header">
         <h3 class="card-title">Attached Documents</h3>
     </div>
-    <ul style="list-style: none; padding: 0;">
-        {% for doc in documents %}
-        <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
-            <a href="{{ doc.file.url }}" target="_blank">📄 {{ doc.get_filename }}</a>
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="documents-list">
+            {% for doc in documents %}
+            <li>
+                <a href="{{ doc.file.url }}" target="_blank" class="doc-link">📄 {{ doc.get_filename }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endif %}
 
 {% if staff_notes %}
-<div class="card">
+<div class="card" style="margin-bottom: 1.5rem;">
     <div class="card-header">
         <h3 class="card-title">Staff Notes</h3>
     </div>
-    <ul style="list-style: none; padding: 0;">
-        {% for note in staff_notes %}
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
-            <p>{{ note.note }}</p>
-            <small style="color: #6b7280;">{{ note.created_at|date:"M d, Y H:i" }}</small>
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for note in staff_notes %}
+            <li class="timeline-item">
+                <p class="timeline-description">{{ note.note }}</p>
+                <span class="timeline-meta">{{ note.created_at|date:"M d, Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endif %}
 
-<!-- Decision Form -->
 {% if req.status == 'sent_to_lecturer' or req.status == 'needs_info' %}
-<div class="card">
+<div class="card" style="margin-bottom: 1.5rem;">
     <div class="card-header">
         <h3 class="card-title">Make Decision</h3>
     </div>
-    
-    <div class="form-group">
-        <label class="form-label" for="feedback">Feedback / Notes</label>
-        <textarea id="feedback" class="form-control" rows="3" placeholder="Add your feedback here..."></textarea>
-    </div>
-    
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <form action="{% url 'lecturers:approve' req.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="feedback" id="approve-feedback">
-            <button type="submit" class="btn btn-success" onclick="document.getElementById('approve-feedback').value = document.getElementById('feedback').value;">✓ Approve</button>
-        </form>
+    <div class="card-body">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="feedback">Feedback / Notes</label>
+            <textarea id="feedback" class="form-control" rows="3" placeholder="Add your feedback here..."></textarea>
+        </div>
         
-        <form action="{% url 'lecturers:reject' req.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="feedback" id="reject-feedback">
-            <button type="submit" class="btn btn-danger" onclick="document.getElementById('reject-feedback').value = document.getElementById('feedback').value;">✗ Reject</button>
-        </form>
-        
-        <form action="{% url 'lecturers:needs_info' req.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="feedback" id="info-feedback">
-            <button type="submit" class="btn btn-warning" onclick="document.getElementById('info-feedback').value = document.getElementById('feedback').value;">? Needs Info</button>
-        </form>
-        
-        <form action="{% url 'lecturers:forward_to_hod' req.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="feedback" id="forward-feedback">
-            <button type="submit" class="btn btn-primary" onclick="document.getElementById('forward-feedback').value = document.getElementById('feedback').value;">→ Forward to HOD</button>
-        </form>
+        <div class="decision-buttons">
+            <form action="{% url 'lecturers:approve' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="feedback" id="approve-feedback">
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('approve-feedback').value = document.getElementById('feedback').value;">✓ Approve</button>
+            </form>
+            
+            <form action="{% url 'lecturers:reject' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="feedback" id="reject-feedback">
+                <button type="submit" class="btn btn-danger" onclick="document.getElementById('reject-feedback').value = document.getElementById('feedback').value;">✗ Reject</button>
+            </form>
+            
+            <form action="{% url 'lecturers:needs_info' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="feedback" id="info-feedback">
+                <button type="submit" class="btn btn-warning" onclick="document.getElementById('info-feedback').value = document.getElementById('feedback').value;">? Needs Info</button>
+            </form>
+            
+            <form action="{% url 'lecturers:forward_to_hod' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="feedback" id="forward-feedback">
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('forward-feedback').value = document.getElementById('feedback').value;">→ Forward to HOD</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -115,14 +278,18 @@
     <div class="card-header">
         <h3 class="card-title">Status History</h3>
     </div>
-    <ul style="list-style: none; padding: 0;">
-        {% for history in status_history %}
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
-            <span class="badge badge--{{ history.status }}">{{ history.get_status_display }}</span>
-            <p style="margin: 0.5rem 0 0 0;">{{ history.description }}</p>
-            <small style="color: #6b7280;">{{ history.created_at|date:"M d, Y H:i" }}</small>
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for history in status_history %}
+            <li class="timeline-item">
+                <div class="timeline-header">
+                    <span class="badge status-{{ history.status }}">{{ history.get_status_display }}</span>
+                </div>
+                <p class="timeline-description">{{ history.description }}</p>
+                <span class="timeline-meta">{{ history.created_at|date:"M d, Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}

@@ -3,11 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Code - SCE Request Portal</title>
+    <title>Verify Code - SCE Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
+            --color-primary: #0f172a;
+            --color-primary-light: #1e293b;
+            --color-accent: #4f46e5;
+            --color-bg: #f8fafc;
+            --color-card: #ffffff;
+            --color-border: #e2e8f0;
+            --color-text: #0f172a;
+            --color-text-secondary: #64748b;
+            --color-text-muted: #94a3b8;
+            --color-error: #dc2626;
+            --color-error-bg: #fef2f2;
         }
         
         * {
@@ -17,138 +29,208 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: -0.025em;
+        }
+        
+        .main-content {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem;
         }
         
         .verify-container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
         
         .verify-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            width: 64px;
+            height: 64px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .verify-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--color-accent);
         }
         
         .verify-header h1 {
-            color: #1f2937;
             font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
             margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
         }
         
         .verify-header p {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.75rem;
         }
         
-        .email-display {
-            background: #f3f4f6;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 1.5rem;
+        .email-badge {
             display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--color-text);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
         }
         
-        .form-group {
-            margin-bottom: 1.25rem;
+        .verify-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2rem;
         }
         
         .code-input {
             width: 100%;
             padding: 1rem;
-            border: 2px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-family: inherit;
+            font-weight: 600;
             text-align: center;
             letter-spacing: 0.5rem;
-            font-weight: bold;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-card);
+            color: var(--color-text);
+            transition: all 0.15s ease;
         }
         
         .code-input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         
-        .btn-verify {
+        .code-input::placeholder {
+            color: var(--color-text-muted);
+            letter-spacing: 0.25rem;
+        }
+        
+        .btn {
+            display: block;
             width: 100%;
-            padding: 0.875rem;
-            background: var(--primary-color);
-            color: white;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            font-family: inherit;
             border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.15s ease;
+            margin-top: 1.25rem;
         }
         
-        .btn-verify:hover {
-            background: var(--primary-dark);
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-primary-light);
         }
         
         .alert {
             padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+            text-align: left;
         }
         
         .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
+            background: var(--color-error-bg);
+            color: var(--color-error);
+            border: 1px solid #fecaca;
+        }
+        
+        .expiry-note {
+            margin-top: 1.25rem;
+            font-size: 0.8125rem;
+            color: var(--color-text-muted);
         }
         
         .back-link {
-            display: block;
+            display: inline-block;
             margin-top: 1.5rem;
-            color: var(--primary-color);
+            font-size: 0.9375rem;
+            color: var(--color-text-secondary);
             text-decoration: none;
         }
         
         .back-link:hover {
-            text-decoration: underline;
+            color: var(--color-text);
         }
     </style>
 </head>
 <body>
-    <div class="verify-container">
-        <div class="verify-icon">🔐</div>
-        <div class="verify-header">
-            <h1>Enter Verification Code</h1>
-            <p>We sent a 6-digit code to:</p>
-            <span class="email-display">{{ email }}</span>
-        </div>
-        
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <input type="text" name="code" class="code-input" maxlength="6" placeholder="000000" pattern="[0-9]{6}" required autofocus>
+    <nav class="navbar">
+        <a href="{% url 'core:home' %}" class="navbar-brand">SCE Portal</a>
+    </nav>
+    
+    <div class="main-content">
+        <div class="verify-container">
+            <div class="verify-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+            </div>
+            <div class="verify-header">
+                <h1>Check your email</h1>
+                <p>We sent a 6-digit verification code to:</p>
+                <span class="email-badge">{{ email }}</span>
             </div>
             
-            <button type="submit" class="btn-verify">Verify</button>
-        </form>
-        
-        <a href="{% url 'core:login' %}" class="back-link">← Back to login</a>
+            <div class="verify-card">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="code" class="code-input" maxlength="6" 
+                           placeholder="000000" pattern="[0-9]{6}" required autofocus>
+                    <button type="submit" class="btn btn-primary">Verify Code</button>
+                </form>
+                
+                <p class="expiry-note">Code expires in 10 minutes</p>
+            </div>
+            
+            <a href="{% url 'core:login' %}" class="back-link">← Back to sign in</a>
+        </div>
     </div>
 </body>
 </html>

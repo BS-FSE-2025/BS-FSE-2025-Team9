@@ -1,96 +1,257 @@
 {% extends "base.html" %}
-{% block title %}Student Dashboard - SCE Request Portal{% endblock %}
+{% block title %}My Requests - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .page-subtitle {
+        color: var(--color-text-secondary);
+        margin-top: 0.25rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .stat-card {
+        background: var(--color-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8125rem;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .stat-value.pending { color: var(--color-warning); }
+    .stat-value.approved { color: var(--color-success); }
+    .stat-value.rejected { color: var(--color-error); }
+    
+    .filters-bar {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-label {
+        font-size: 0.8125rem;
+        color: var(--color-text-secondary);
+        font-weight: 500;
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: var(--color-bg);
+        padding: 0.25rem;
+        border-radius: var(--radius);
+    }
+    
+    .filter-tab {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+    
+    .filter-tab:hover {
+        color: var(--color-text);
+    }
+    
+    .filter-tab.active {
+        background: var(--color-card);
+        color: var(--color-text);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .request-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .request-item {
+        background: var(--color-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.15s ease;
+    }
+    
+    .request-item:hover {
+        border-color: var(--color-border-dark);
+        box-shadow: var(--shadow);
+    }
+    
+    .request-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.875rem;
+        flex-wrap: wrap;
+    }
+    
+    .request-id {
+        font-weight: 600;
+        color: var(--color-text);
+    }
+    
+    .request-meta {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .request-meta { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .meta-item {
+        font-size: 0.875rem;
+    }
+    
+    .meta-label {
+        color: var(--color-text-muted);
+        margin-bottom: 0.125rem;
+    }
+    
+    .meta-value {
+        color: var(--color-text);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom: 1.5rem;">My Requests</h1>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">My Requests</h1>
+        <p class="page-subtitle">Track and manage your academic requests</p>
+    </div>
+    <a href="{% url 'students:submit_request' %}" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        New Request
+    </a>
+</div>
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-value">{{ total_requests }}</div>
         <div class="stat-label">Total Requests</div>
+        <div class="stat-value">{{ total|default:0 }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" style="color: #f59e0b;">{{ in_progress }}</div>
-        <div class="stat-label">In Progress</div>
+        <div class="stat-label">Pending</div>
+        <div class="stat-value pending">{{ pending|default:0 }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" style="color: #10b981;">{{ approved }}</div>
         <div class="stat-label">Approved</div>
+        <div class="stat-value approved">{{ approved|default:0 }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value" style="color: #ef4444;">{{ rejected }}</div>
         <div class="stat-label">Rejected</div>
+        <div class="stat-value rejected">{{ rejected|default:0 }}</div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 class="card-title">Requests</h2>
-        <a href="{% url 'students:submit_request' %}" class="btn btn-primary">+ New Request</a>
-    </div>
-    
-    <div class="filter-bar">
-        <label>Filter by status:</label>
-        <select onchange="window.location.href='?status=' + this.value">
-            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
-            <option value="new" {% if status_filter == 'new' %}selected{% endif %}>New</option>
-            <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
-            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
-            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
-        </select>
-    </div>
-    
-    {% if requests %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Request ID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for req in requests %}
-            <tr>
-                <td><strong>{{ req.request_id }}</strong></td>
-                <td>{{ req.title }}</td>
-                <td>{{ req.request_type }}</td>
-                <td><span class="badge badge--{{ req.status }}">{{ req.get_status_display }}</span></td>
-                <td><span class="badge badge--{{ req.priority }}">{{ req.get_priority_display }}</span></td>
-                <td>{{ req.created_at|date:"M d, Y" }}</td>
-                <td>
-                    <a href="{% url 'students:request_detail' req.request_id %}" class="btn btn-outline">View</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
-        <h3>No requests yet</h3>
-        <p>Click "New Request" to submit your first request.</p>
-    </div>
-    {% endif %}
-</div>
-
-{% if notifications %}
 <div class="card">
     <div class="card-header">
-        <h2 class="card-title">Recent Notifications</h2>
+        <h2 class="card-title">All Requests</h2>
     </div>
-    <ul style="list-style: none; padding: 0;">
-        {% for notif in notifications %}
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
-            <span style="color: {% if notif.is_read %}#6b7280{% else %}#1f2937{% endif %};">{{ notif.message }}</span>
-            <small style="color: #9ca3af; display: block;">{{ notif.created_at|timesince }} ago</small>
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="card-body">
+        <div class="filters-bar">
+            <div class="filter-tabs">
+                <a href="?status=all" class="filter-tab {% if status_filter == 'all' or not status_filter %}active{% endif %}">All</a>
+                <a href="?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+                <a href="?status=approved" class="filter-tab {% if status_filter == 'approved' %}active{% endif %}">Approved</a>
+                <a href="?status=rejected" class="filter-tab {% if status_filter == 'rejected' %}active{% endif %}">Rejected</a>
+            </div>
+        </div>
+        
+        {% if requests %}
+        <div class="request-list">
+            {% for req in requests %}
+            <a href="{% url 'students:request_detail' req.id %}" class="request-item">
+                <div class="request-header">
+                    <span class="request-id">{{ req.request_id }}</span>
+                    <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+                    <span class="badge badge-default">{{ req.request_type }}</span>
+                    <span class="badge priority-{{ req.priority }}">{{ req.get_priority_display }}</span>
+                </div>
+                <div class="request-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Title</div>
+                        <div class="meta-value">{{ req.title|truncatechars:30 }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Type</div>
+                        <div class="meta-value">{{ req.request_type }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Submitted</div>
+                        <div class="meta-value">{{ req.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Last Updated</div>
+                        <div class="meta-value">{{ req.updated_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h3>No requests yet</h3>
+            <p>Submit your first request to get started</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
-{% endif %}
 {% endblock %}
