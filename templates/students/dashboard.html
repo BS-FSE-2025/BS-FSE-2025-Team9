@@ -217,7 +217,7 @@
         {% if requests %}
         <div class="request-list">
             {% for req in requests %}
-            <a href="{% url 'students:request_detail' req.id %}" class="request-item">
+            <a href="{% url 'students:request_detail' req.request_id %}" class="request-item">
                 <div class="request-header">
                     <span class="request-id">{{ req.request_id }}</span>
                     <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
