@@ -83,15 +83,17 @@ def create_courses(degrees):
             defaults={'name': course_data['name'], 'is_active': True}
         )
         
-        # Add degrees to course
+        # ALWAYS add degrees to course (even if course already exists)
+        linked_degrees = []
         for degree_code in course_data['degrees']:
             if degree_code in degrees:
                 course.degrees.add(degrees[degree_code])
+                linked_degrees.append(degree_code)
         
         if created:
-            print(f"  Created: {course.code} - {course.name}")
+            print(f"  Created: {course.code} - {course.name} -> [{', '.join(linked_degrees)}]")
         else:
-            print(f"  Exists: {course.code} - {course.name}")
+            print(f"  Exists: {course.code} - {course.name} -> Linked to: [{', '.join(linked_degrees)}]")
         
         created_courses[course_data['code']] = course
     

@@ -64,20 +64,44 @@
             </div>
         </div>
         
-        <!-- Course Selection -->
-        <div id="course-section" data-aos="fade-up" data-aos-delay="150" class="glass-card rounded-2xl p-6">
+        <!-- Department Selection -->
+        <div id="department-section" data-aos="fade-up" data-aos-delay="150" class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-4 pb-3 border-b border-slate-700/50">Department Selection</h3>
+            
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text text-slate-300 font-medium">Department <span id="department-required" class="text-red-400">*</span></span>
+                </label>
+                <select name="department" id="department" class="select select-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 w-full" required>
+                    <option value="">-- Select a Department --</option>
+                    {% for d in degrees %}
+                    <option value="{{ d.id }}" {% if request.user.degree and request.user.degree.id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                    {% empty %}
+                    <option value="" disabled>No departments available</option>
+                    {% endfor %}
+                </select>
+                <label class="label">
+                    <span class="label-text-alt text-slate-500">
+                        Select the department this request is related to
+                    </span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Course Selection (Optional)
+        <div id="course-section" data-aos="fade-up" data-aos-delay="175" class="glass-card rounded-2xl p-6">
             <h3 class="text-lg font-semibold text-white mb-4 pb-3 border-b border-slate-700/50">Course Selection</h3>
             
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text text-slate-300 font-medium">Course <span id="course-required">*</span></span>
+                    <span class="label-text text-slate-300 font-medium">Course <span id="course-required" class="text-slate-500">(optional)</span></span>
                 </label>
                 <select name="course" id="course" class="select select-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 w-full">
-                    <option value="">-- Select a Course --</option>
+                    <option value="">-- Select a Course (optional) --</option>
                     {% for c in courses %}
                     <option value="{{ c.id }}">{{ c.code }} - {{ c.name }}</option>
                     {% empty %}
-                    <option value="" disabled>No courses available</option>
+                    <option value="" disabled>No courses available for your degree</option>
                     {% endfor %}
                 </select>
                 <label class="label">
@@ -90,7 +114,7 @@
                     </span>
                 </label>
             </div>
-        </div>
+        </div> -->
         
         <!-- General fields -->
         <div id="general-fields" data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl p-6">
@@ -260,6 +284,10 @@ function toggleFields() {
         section.querySelectorAll('input, textarea, select').forEach(el => el.removeAttribute('required'));
     });
     
+    // Department section - always visible
+    const departmentSection = document.getElementById('department-section');
+    departmentSection.classList.remove('hidden');
+    
     // Course section visibility and required state
     const courseSection = document.getElementById('course-section');
     const courseSelect = document.getElementById('course');
@@ -280,20 +308,20 @@ function toggleFields() {
         section.classList.remove('hidden');
         document.getElementById('reason_approval').setAttribute('required', '');
         courseSection.classList.remove('hidden');
-        courseSelect.setAttribute('required', '');
-        courseRequired.textContent = '*';
-        courseRequired.classList.add('text-red-400');
-        courseRequired.classList.remove('text-slate-500');
+        courseSelect.removeAttribute('required');
+        courseRequired.textContent = '(optional)';
+        courseRequired.classList.remove('text-red-400');
+        courseRequired.classList.add('text-slate-500');
         
     } else if (type === 'Appeal') {
         const section = document.getElementById('appeal-fields');
         section.classList.remove('hidden');
         document.getElementById('reason_appeal').setAttribute('required', '');
         courseSection.classList.remove('hidden');
-        courseSelect.setAttribute('required', '');
-        courseRequired.textContent = '*';
-        courseRequired.classList.add('text-red-400');
-        courseRequired.classList.remove('text-slate-500');
+        courseSelect.removeAttribute('required');
+        courseRequired.textContent = '(optional)';
+        courseRequired.classList.remove('text-red-400');
+        courseRequired.classList.add('text-slate-500');
         
     } else if (type === 'Postponement') {
         const section = document.getElementById('postponement-fields');

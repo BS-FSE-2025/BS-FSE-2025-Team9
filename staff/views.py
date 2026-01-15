@@ -1,5 +1,5 @@
 """
-Staff/Secretary views - Review requests, add notes, request documents, forward to HOD.
+Staff/Secretary views - Review requests, add notes, request documents, forward to lecturers/HOD.
 """
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from core.models import User
 from requests_unified.models import (
-    Request, StaffNote, MissingDocument, StatusHistory, Notification
+    Request, StaffNote, MissingDocument, StatusHistory, Notification, Degree
 )
 
 
@@ -30,6 +30,7 @@ def staff_required(view_func):
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Staff dashboard - view all requests."""
     status_filter = request.GET.get("status", "all")
+    view_mode = request.GET.get("view", "requests")  # 'requests' or 'lecturers'
     
     requests_qs = Request.objects.all().order_by("-created_at")
     
@@ -38,8 +39,24 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     new_count = requests_qs.filter(status=Request.STATUS_NEW).count()
     in_progress = requests_qs.filter(status=Request.STATUS_IN_PROGRESS).count()
     needs_info = requests_qs.filter(status=Request.STATUS_NEEDS_INFO).count()
+    forwarded = requests_qs.filter(status=Request.STATUS_SENT_TO_LECTURER).count()
     
-    # Filter
+    # Get lecturers from the same department as the secretary
+    department_lecturers = []
+    if request.user.degree:
+        department_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            degree=request.user.degree,
+            is_active=True
+        ).order_by('first_name', 'last_name')
+    else:
+        # If secretary has no department, show all lecturers
+        department_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            is_active=True
+        ).order_by('first_name', 'last_name')
+    
+    # Filter requests
     if status_filter == "new":
         visible_requests = requests_qs.filter(status=Request.STATUS_NEW)
     elif status_filter == "in_progress":
@@ -58,7 +75,11 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "new_count": new_count,
         "in_progress": in_progress,
         "needs_info": needs_info,
+        "forwarded": forwarded,
         "status_filter": status_filter,
+        "view_mode": view_mode,
+        "department_lecturers": department_lecturers,
+        "secretary_department": request.user.degree,
     }
     return render(request, "staff/dashboard.html", context)
 
@@ -73,14 +94,33 @@ def request_detail(request: HttpRequest, request_id: int) -> HttpResponse:
     documents = req.documents.all()
     status_history = req.status_history.all()
     
-    # Get available lecturers for forwarding
-    available_lecturers = []
-    can_forward_to_lecturer = False
+    # Get lecturers from the same department as the secretary
+    department_lecturers = []
+    if request.user.degree:
+        department_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            degree=request.user.degree,
+            is_active=True
+        ).order_by('first_name', 'last_name')
+    else:
+        # If secretary has no department, show all lecturers
+        department_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            is_active=True
+        ).order_by('first_name', 'last_name')
     
+    # Also get course-specific lecturers if request has a course
+    course_lecturers = []
     if req.course:
-        # Get lecturers assigned to this course
-        available_lecturers = req.course.lecturers.filter(is_active=True)
-        can_forward_to_lecturer = available_lecturers.exists()
+        course_lecturers = req.course.lecturers.filter(is_active=True)
+    
+    # Combine: prioritize course lecturers, then department lecturers
+    available_lecturers = list(course_lecturers)
+    for lecturer in department_lecturers:
+        if lecturer not in available_lecturers:
+            available_lecturers.append(lecturer)
+    
+    can_forward_to_lecturer = len(available_lecturers) > 0
     
     context = {
         "req": req,
@@ -89,7 +129,10 @@ def request_detail(request: HttpRequest, request_id: int) -> HttpResponse:
         "documents": documents,
         "status_history": status_history,
         "available_lecturers": available_lecturers,
+        "course_lecturers": course_lecturers,
+        "department_lecturers": department_lecturers,
         "can_forward_to_lecturer": can_forward_to_lecturer,
+        "secretary_department": request.user.degree,
     }
     return render(request, "staff/request_detail.html", context)
 
@@ -186,15 +229,21 @@ def send_to_lecturer(request: HttpRequest, request_id: int) -> HttpResponse:
         messages.error(request, "Cannot forward: there are pending missing documents.")
         return redirect("staff:request_detail", request_id=req.id)
     
-    # Check if request has a course
-    if not req.course:
-        messages.error(request, "Cannot forward to lecturer: this request has no course assigned. Please forward to HOD instead.")
-        return redirect("staff:request_detail", request_id=req.id)
+    # Get available lecturers - from department or all if no department
+    if request.user.degree:
+        available_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            degree=request.user.degree,
+            is_active=True
+        )
+    else:
+        available_lecturers = User.objects.filter(
+            role=User.ROLE_LECTURER,
+            is_active=True
+        )
     
-    # Get lecturers assigned to this course
-    available_lecturers = req.course.lecturers.filter(is_active=True)
     if not available_lecturers.exists():
-        messages.error(request, "Cannot forward to lecturer: no lecturers are assigned to this course. Please forward to HOD instead.")
+        messages.error(request, "Cannot forward to lecturer: no lecturers available in your department.")
         return redirect("staff:request_detail", request_id=req.id)
     
     if request.method == "POST":
