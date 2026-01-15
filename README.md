@@ -9,70 +9,71 @@ It allows students to submit requests online and enables academic secretaries, l
 
  **User Roles & Functionalities**
  
-  ** Student**
- -Secure login and logout
- -Submit new requests with attachments
- -Track request status in real time
- -View request history and staff notes
- -Receive notifications for every status update
+  ## User Roles & Functionalities
+   **Student**
+   -Secure login and logout
+   -Submit new requests with attachments
+   -Track request status in real time
+   -View request history and staff notes
+   -Receive notifications for every status update
 
- **Academic Secretary**
+   **Academic Secretary**
+   -View assigned student requests
+   -Review and validate submitted documents
+   -Add notes or request additional documents
+   -Update request status
+   -Forward requests to lecturers or department heads
 
--View assigned student requests
--Review and validate submitted documents
--Add notes or request additional documents
--Update request status
--Forward requests to lecturers or department heads
+   **Lecturer**
+   -View requests related to their courses
+   -Review academic details
+   -Add professional comments or recommendations
+   -Forward reviewed requests for final approval
 
- **Lecturer**
+   **Head of Department**
 
--View requests related to their courses
--Review academic details
--Add professional comments or recommendations
--Forward reviewed requests for final approval
+   -View all pending approval requests
+   -Filter requests by date and type
+   -Approve or reject requests
+   -Add final notes visible to students
+   -Monitor request statistics and processing performance
 
-** Head of Department**
+## Features
 
--View all pending approval requests
--Filter requests by date and type
--Approve or reject requests
--Add final notes visible to students
--Monitor request statistics and processing performance
-
- **System Features**
+**System Features**
  
-1. Authentication & Security
--Secure login/logout system
--Role-Based Access Control (RBAC)
--Session-based authentication
--Protected API endpoints
+ 1. **Authentication & Security**
+ -Secure login/logout system
+ -Role-Based Access Control (RBAC)
+ -Session-based authentication
+ -Protected API endpoints
 
-2. Digital Request Submission
--Multiple request types:
--Study Approval
--Appeal
--Postponement
--General Request
--File upload and document management
--Input validation
+ 2. **Digital Request Submission**
+ -Multiple request types:
+ -Study Approval
+ -Appeal
+ -Postponement
+ -General Request
+ -File upload and document management
+ -Input validation
 
-3. Request Processing Workflow
--Multi-role approval flow
--Automatic status updates
--Request forwarding between roles
--Full request history tracking
+ 3. **Request Processing Workflow**
+ -Multi-role approval flow
+ -Automatic status updates
+ -Request forwarding between roles
+ -Full request history tracking
 
-4. Notification System
--Submission confirmation
--Status change notifications
--Approval/rejection alerts
--Final notes notifications
+ 4. **Notification System**
+ -Submission confirmation
+ -Status change notifications
+ -Approval/rejection alerts
+ -Final notes notifications
 
-5. Dashboards & Management
--Student dashboard with request summary
--Staff and lecturer request management views
--Department head analytics and statistics
--Exportable reports (future support)
+ 5. **Dashboards & Management**
+ -Student dashboard with request summary
+ -Staff and lecturer request management views
+ -Department head analytics and statistics
+ -Exportable reports (future support)
 
 ## Installation
 
