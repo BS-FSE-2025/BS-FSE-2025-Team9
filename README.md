@@ -10,11 +10,11 @@ It allows students to submit requests online and enables academic secretaries, l
  **User Roles & Functionalities**
  
   ** Student**
--Secure login and logout
--Submit new requests with attachments
--Track request status in real time
--View request history and staff notes
--Receive notifications for every status update
+ -Secure login and logout
+ -Submit new requests with attachments
+ -Track request status in real time
+ -View request history and staff notes
+ -Receive notifications for every status update
 
  **Academic Secretary**
 
