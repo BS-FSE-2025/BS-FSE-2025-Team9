@@ -8,8 +8,8 @@ The Student Forms Request Management System replaces manual, paper-based student
 It allows students to submit requests online and enables academic secretaries, lecturers, and department heads to review, process, and approve requests through a structured workflow with full transparency and notifications.
 
  **User Roles & Functionalities**
+ 
   ** Student**
-  
 -Secure login and logout
 -Submit new requests with attachments
 -Track request status in real time
