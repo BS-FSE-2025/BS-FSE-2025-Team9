@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}Request {{ request_obj.request_id }} - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .request-id {
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .detail-item {
+        font-size: 0.875rem;
+    }
+    
+    .detail-label {
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    
+    .detail-value {
+        color: var(--color-text);
+        font-weight: 500;
+    }
+    
+    .description-box {
+        padding: 1rem;
+        background: var(--color-bg);
+        border-radius: var(--radius);
+        white-space: pre-wrap;
+        line-height: 1.7;
+    }
+    
+    .feedback-box {
+        padding: 1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+    }
+    
+    .feedback-box.lecturer {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+    }
+    
+    .feedback-box.final {
+        background: #dbeafe;
+        border: 1px solid #bfdbfe;
+    }
+    
+    .feedback-box .label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .documents-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .documents-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .documents-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .doc-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .doc-link:hover {
+        color: var(--color-accent);
+    }
+    
+    .doc-date {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+    }
+    
+    .timeline {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timeline-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .timeline-item:last-child {
+        border-bottom: none;
+    }
+    
+    .timeline-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--color-border-dark);
+        border-radius: 50%;
+        margin-top: 5px;
+        flex-shrink: 0;
+    }
+    
+    .timeline-content {
+        flex: 1;
+    }
+    
+    .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.375rem;
+        flex-wrap: wrap;
+    }
+    
+    .timeline-description {
+        color: var(--color-text);
+        margin-bottom: 0.25rem;
+    }
+    
+    .timeline-meta {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+    }
+    
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    .back-link:hover {
+        color: var(--color-text);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'students:dashboard' %}" class="back-link">← Back to My Requests</a>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ request_obj.title }}</h1>
+        <div class="request-id">{{ request_obj.request_id }}</div>
+    </div>
+    <span class="badge status-{{ request_obj.status }}">{{ request_obj.get_status_display }}</span>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Type</div>
+                <div class="detail-value">{{ request_obj.request_type }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Priority</div>
+                <div class="detail-value"><span class="badge priority-{{ request_obj.priority }}">{{ request_obj.get_priority_display }}</span></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Submitted</div>
+                <div class="detail-value">{{ request_obj.created_at|date:"M d, Y H:i" }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ request_obj.updated_at|date:"M d, Y H:i" }}</div>
+            </div>
+        </div>
+        
+        <div class="detail-item" style="margin-bottom: 1.5rem;">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Description</div>
+            <div class="description-box">{{ request_obj.description }}</div>
+        </div>
+        
+        {% if request_obj.lecturer_feedback %}
+        <div class="feedback-box lecturer">
+            <div class="label">Lecturer Feedback</div>
+            <p>{{ request_obj.lecturer_feedback }}</p>
+        </div>
+        {% endif %}
+        
+        {% if request_obj.final_notes %}
+        <div class="feedback-box final">
+            <div class="label">Final Notes from Department Head</div>
+            <p>{{ request_obj.final_notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if documents %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Attached Documents</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="documents-list">
+            {% for doc in documents %}
+            <li>
+                <a href="{{ doc.file.url }}" target="_blank" class="doc-link">📄 {{ doc.get_filename }}</a>
+                <span class="doc-date">{{ doc.uploaded_at|date:"M d, Y" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Status History</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for history in status_history %}
+            <li class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <span class="badge status-{{ history.status }}">{{ history.get_status_display }}</span>
+                    </div>
+                    <p class="timeline-description">{{ history.description }}</p>
+                    <span class="timeline-meta">{{ history.created_at|date:"M d, Y H:i" }} — {{ history.get_role_display }}</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% if staff_notes %}
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Staff Notes</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for note in staff_notes %}
+            <li class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <p class="timeline-description">{{ note.note }}</p>
+                    <span class="timeline-meta">{{ note.created_at|date:"M d, Y H:i" }} — {{ note.get_role_display }}</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

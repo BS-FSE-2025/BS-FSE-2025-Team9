@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Lecturer Dashboard{% endblock %}
+{% block content %}
+
+<div class="dashboard-container">
+
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1>Lecturer Dashboard</h1>
+        <div class="welcome-text">Welcome back, Lecturer</div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="{% url 'admin:logout' %}" class="logout-btn" style="text-decoration: none; display: inline-block; padding: 10px 20px;">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="filter-section">
+    <div class="filter-header">
+      <span class="filter-icon">🔎</span>
+      <h2>Filter Requests</h2>
+    </div>
+    <p class="filter-subtitle">Filter by status and request type</p>
+
+    <form method="get" class="filter-form">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Status</label>
+          <select name="status" onchange="this.form.submit()">
+            <option value="">All Statuses</option>
+            <option value="pending" {% if selected_status == "pending" %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if selected_status == "approved" %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if selected_status == "rejected" %}selected{% endif %}>Rejected</option>
+            <option value="needs_info" {% if selected_status == "needs_info" %}selected{% endif %}>Needs Info</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Request Type</label>
+          <select name="type" onchange="this.form.submit()">
+            <option value="">All Types</option>
+            {% for t in request_types %}
+              <option value="{{ t }}" {% if selected_type == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section class="requests-section">
+    <h2>Assigned Student Requests</h2>
+    <div class="requests-count">Showing {{ requests|length }} request(s)</div>
+
+    <div class="requests-list">
+      {% for r in requests %}
+      <div class="request-card">
+        <div class="request-header">
+          <div class="student-info">
+            <span class="student-name">{{ r.student.name }}</span>
+            <span class="student-id">({{ r.student.student_id }})</span>
+            <span class="status-badge status-{{ r.status }}">{{ r.get_status_display }}</span>
+          </div>
+
+          <button class="view-btn" type="button"
+                  onclick="openRequestDetail('{{ r.id }}', '{{ r.request_id }}')">
+            👁 View
+          </button>
+        </div>
+        
+        <div class="request-details">
+          <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value">{{ r.request_type }}</span>
+          </div>
+        
+          <div class="detail-row">
+            <span class="detail-label">Course:</span>
+            <span class="detail-value">{{ r.course_name }}</span>
+          </div>
+        
+          <div class="detail-row">
+            <span class="detail-label">Submitted:</span>
+            <span class="detail-value">{{ r.submitted_at|date:"n/j/Y H:i" }}</span>
+          </div>
+        </div>
+        <div class="request-description">{{ r.description|truncatechars:170 }}</div>
+        <div class="attachments-info">📎 {{ r.attachments.count }} attachment(s)</div>
+      </div>
+      {% empty %}
+      <div class="no-requests">No requests found.</div>
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+
+<div class="modal" id="requestModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <span class="modal-icon">📄</span>
+        <div>
+          <h2 id="modalTitle">Request Details</h2>
+          <div class="modal-subtitle">Review and manage student request</div>
+        </div>
+      </div>
+      <button class="close-btn" type="button" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="modalBody">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

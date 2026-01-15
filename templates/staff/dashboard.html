@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}Secretary Dashboard - SCE Portal{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8" data-aos="fade-down">
+    <div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">Secretary Dashboard</h1>
+        <p class="text-slate-400 mt-1">Process and forward incoming requests</p>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div data-aos="fade-up" data-aos-delay="100" class="glass-card rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400 text-sm font-medium">Total</span>
+            <div class="w-9 h-9 rounded-xl bg-slate-700/50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-white">{{ total|default:0 }}</div>
+    </div>
+    
+    <div data-aos="fade-up" data-aos-delay="150" class="glass-card rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400 text-sm font-medium">New</span>
+            <div class="w-9 h-9 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-blue-400">{{ new_count|default:0 }}</div>
+    </div>
+    
+    <div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400 text-sm font-medium">In Progress</span>
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-amber-400">{{ in_progress|default:0 }}</div>
+    </div>
+    
+    <div data-aos="fade-up" data-aos-delay="250" class="glass-card rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400 text-sm font-medium">Needs Info</span>
+            <div class="w-9 h-9 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-orange-400">{{ needs_info|default:0 }}</div>
+    </div>
+    
+    <div data-aos="fade-up" data-aos-delay="300" class="glass-card rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400 text-sm font-medium">Forwarded</span>
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                </svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-indigo-400">{{ forwarded|default:0 }}</div>
+    </div>
+</div>
+
+<!-- Requests Card -->
+<div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl overflow-hidden">
+    <!-- Card Header -->
+    <div class="px-6 py-4 border-b border-slate-700/50">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <h2 class="text-lg font-semibold text-white">Incoming Requests</h2>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Search -->
+                <div class="relative">
+                    <input type="text" placeholder="Search..." 
+                           value="{{ search }}" 
+                           onchange="window.location.href='?search=' + this.value"
+                           class="input input-sm input-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 w-48 pl-9">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                
+                <!-- Type Filter -->
+                <select class="select select-sm select-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 w-36"
+                        onchange="window.location.href='?type=' + this.value">
+                    <option value="">All Types</option>
+                    <option value="Study Approval" {% if type_filter == 'Study Approval' %}selected{% endif %}>Study Approval</option>
+                    <option value="Appeal" {% if type_filter == 'Appeal' %}selected{% endif %}>Appeal</option>
+                    <option value="Postponement" {% if type_filter == 'Postponement' %}selected{% endif %}>Postponement</option>
+                    <option value="General" {% if type_filter == 'General' %}selected{% endif %}>General</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Status Tabs -->
+        <div class="flex gap-1 p-1 bg-slate-800/50 rounded-lg mt-4 w-fit">
+            <a href="?status=all" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'all' or not status_filter %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                All Active
+            </a>
+            <a href="?status=new" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'new' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                New <span class="ml-1 text-xs opacity-70">({{ new_count|default:0 }})</span>
+            </a>
+            <a href="?status=in_progress" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'in_progress' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                In Progress <span class="ml-1 text-xs opacity-70">({{ in_progress|default:0 }})</span>
+            </a>
+            <a href="?status=needs_info" class="px-4 py-2 text-sm font-medium rounded-md transition-all {% if status_filter == 'needs_info' %}bg-indigo-500 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700/50{% endif %}">
+                Needs Info <span class="ml-1 text-xs opacity-70">({{ needs_info|default:0 }})</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Card Body -->
+    <div class="p-6">
+        {% if requests %}
+        <div class="space-y-4">
+            {% for req in requests %}
+            <a href="{% url 'staff:request_detail' req.id %}" 
+               class="block p-5 rounded-xl bg-slate-800/30 border border-slate-700/30 hover:border-indigo-500/30 hover:bg-slate-800/50 transition-all duration-300 group"
+               data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                <!-- Header -->
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span class="font-mono text-sm text-indigo-400 font-medium">{{ req.request_id }}</span>
+                    <span class="badge status-{{ req.status }} text-xs px-3 py-1 rounded-full">{{ req.get_status_display }}</span>
+                    <span class="badge bg-slate-700/50 text-slate-300 border-slate-600/50 text-xs px-3 py-1 rounded-full">{{ req.request_type }}</span>
+                    <span class="badge priority-{{ req.priority }} text-xs px-3 py-1 rounded-full">{{ req.get_priority_display }}</span>
+                    <svg class="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                
+                <!-- Meta Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Student</div>
+                        <div class="text-sm text-slate-200 font-medium">{{ req.student.get_full_name|default:req.student.email }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Title</div>
+                        <div class="text-sm text-slate-300 truncate">{{ req.title|truncatechars:25 }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Submitted</div>
+                        <div class="text-sm text-slate-300">{{ req.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Last Updated</div>
+                        <div class="text-sm text-slate-300">{{ req.updated_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                <svg class="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2">All caught up!</h3>
+            <p class="text-slate-500">No pending requests to process</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

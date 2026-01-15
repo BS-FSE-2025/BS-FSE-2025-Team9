@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% block title %}Review Request {{ req.request_id }} - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    .back-link:hover {
+        color: var(--color-text);
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .request-id {
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .detail-item {
+        font-size: 0.875rem;
+    }
+    
+    .detail-label {
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    
+    .detail-value {
+        color: var(--color-text);
+        font-weight: 500;
+    }
+    
+    .description-box {
+        padding: 1rem;
+        background: var(--color-bg);
+        border-radius: var(--radius);
+        white-space: pre-wrap;
+        line-height: 1.7;
+    }
+    
+    .feedback-box {
+        padding: 1rem;
+        border-radius: var(--radius);
+        margin-top: 1.5rem;
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+    }
+    
+    .feedback-box .label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .decision-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-success {
+        background: var(--color-success);
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #047857;
+    }
+    
+    .btn-danger {
+        background: var(--color-error);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+    
+    .documents-list, .timeline {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .documents-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .documents-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .doc-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .doc-link:hover {
+        color: var(--color-accent);
+    }
+    
+    .timeline-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .timeline-item:last-child {
+        border-bottom: none;
+    }
+    
+    .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .timeline-description {
+        color: var(--color-text);
+        margin-bottom: 0.25rem;
+    }
+    
+    .timeline-meta {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'head_of_dept:dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ req.title }}</h1>
+        <div class="request-id">{{ req.request_id }}</div>
+    </div>
+    <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Student</div>
+                <div class="detail-value">{{ req.student.get_full_name|default:req.student.email }}</div>
+                <div style="font-size: 0.8125rem; color: var(--color-text-muted);">{{ req.student.email }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Type</div>
+                <div class="detail-value">{{ req.request_type }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Priority</div>
+                <div class="detail-value"><span class="badge priority-{{ req.priority }}">{{ req.get_priority_display }}</span></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Submitted</div>
+                <div class="detail-value">{{ req.created_at|date:"M d, Y" }}</div>
+            </div>
+        </div>
+        
+        <div class="detail-item">
+            <div class="detail-label" style="margin-bottom: 0.5rem;">Description</div>
+            <div class="description-box">{{ req.description }}</div>
+        </div>
+        
+        {% if req.lecturer_feedback %}
+        <div class="feedback-box">
+            <div class="label">Lecturer Feedback</div>
+            <p>{{ req.lecturer_feedback }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if documents %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Attached Documents</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="documents-list">
+            {% for doc in documents %}
+            <li>
+                <a href="{{ doc.file.url }}" target="_blank" class="doc-link">📄 {{ doc.get_filename }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+{% if staff_notes %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Staff Notes</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for note in staff_notes %}
+            <li class="timeline-item">
+                <p class="timeline-description">{{ note.note }}</p>
+                <span class="timeline-meta">{{ note.created_at|date:"M d, Y H:i" }} — {{ note.get_role_display }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+{% if req.status == 'sent_to_hod' %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Final Decision</h3>
+    </div>
+    <div class="card-body">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="notes">Final Notes (visible to student)</label>
+            <textarea id="notes" class="form-control" rows="3" placeholder="Add your final notes here..."></textarea>
+        </div>
+        
+        <div class="decision-buttons">
+            <form action="{% url 'head_of_dept:approve' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="notes" id="approve-notes">
+                <button type="submit" class="btn btn-success" onclick="document.getElementById('approve-notes').value = document.getElementById('notes').value;">✓ Approve Request</button>
+            </form>
+            
+            <form action="{% url 'head_of_dept:reject' req.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="notes" id="reject-notes">
+                <button type="submit" class="btn btn-danger" onclick="document.getElementById('reject-notes').value = document.getElementById('notes').value;">✗ Reject Request</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if req.status in 'approved,rejected' %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Final Notes</h3>
+    </div>
+    <div class="card-body">
+        {% if req.final_notes %}
+        <p style="margin-bottom: 1rem;">{{ req.final_notes }}</p>
+        {% endif %}
+        <form action="{% url 'head_of_dept:add_notes' req.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <textarea name="notes" class="form-control" rows="2" placeholder="Update final notes..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Notes</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Add Comment</h3>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'head_of_dept:add_comment' req.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline">Add Comment</button>
+        </form>
+    </div>
+</div>
+
+{% if comments %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Comments</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for comment in comments %}
+            <li class="timeline-item">
+                <p class="timeline-description">{{ comment.comment }}</p>
+                <span class="timeline-meta">{{ comment.author.get_full_name }} — {{ comment.created_at|date:"M d, Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+{% if approval_logs %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h3 class="card-title">Approval History</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for log in approval_logs %}
+            <li class="timeline-item">
+                <div class="timeline-header">
+                    <span class="badge {% if log.action == 'approved' %}badge-success{% elif log.action == 'rejected' %}badge-error{% else %}badge-default{% endif %}">{{ log.get_action_display }}</span>
+                    <strong>{{ log.approver.get_full_name }}</strong>
+                </div>
+                {% if log.notes %}<p class="timeline-description">{{ log.notes }}</p>{% endif %}
+                <span class="timeline-meta">{{ log.created_at|date:"M d, Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Status History</h3>
+    </div>
+    <div class="card-body" style="padding-top: 0;">
+        <ul class="timeline">
+            {% for history in status_history %}
+            <li class="timeline-item">
+                <div class="timeline-header">
+                    <span class="badge status-{{ history.status }}">{{ history.get_status_display }}</span>
+                </div>
+                <p class="timeline-description">{{ history.description }}</p>
+                <span class="timeline-meta">{{ history.created_at|date:"M d, Y H:i" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

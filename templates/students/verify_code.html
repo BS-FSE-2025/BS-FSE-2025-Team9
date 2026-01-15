@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Code{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 450px;
+    width: 100%;
+    padding: 3rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.auth-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.email-display {
+    background: #f3f4f6;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    color: #667eea;
+    font-weight: 600;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.auth-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.code-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    color: #111827;
+    background: #ffffff;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    font-family: monospace;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.code-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.help-text {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 1rem;
+}
+
+.info-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-box p {
+    font-size: 0.875rem;
+    color: #1e40af;
+    margin: 0;
+}
+
+.error-message {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #ef4444;
+}
+
+@media (max-width: 640px) {
+    .auth-card {
+        padding: 2rem;
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🔐</div>
+            <h1 class="auth-title">Verify Your Identity</h1>
+            <p class="auth-subtitle">
+                We've sent a 6-digit verification code to:
+            </p>
+            <div class="email-display">{{ email }}</div>
+        </div>
+
+        <div class="info-box">
+            <p>
+                ✉️ Check your email inbox for the verification code.
+                The code will expire in 10 minutes.
+            </p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_code" class="form-label">Verification Code</label>
+                <input 
+                    type="text" 
+                    name="code" 
+                    id="id_code" 
+                    class="code-input" 
+                    placeholder="000000"
+                    maxlength="6"
+                    required
+                    autofocus
+                    pattern="[0-9]{6}"
+                >
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Verify & Login
+            </button>
+        </form>
+
+        <p class="help-text">
+            Didn't receive the code? Check your spam folder or 
+            <a href="{% url 'students:login' %}" style="color: #667eea;">try logging in again</a>.
+        </p>
+    </div>
+</div>
+
+<script>
+// Auto-focus and format code input
+const codeInput = document.getElementById('id_code');
+
+codeInput.addEventListener('input', function(e) {
+    // Only allow numbers
+    this.value = this.value.replace(/[^0-9]/g, '');
+    
+    // Auto-submit when 6 digits entered
+    if (this.value.length === 6) {
+        this.form.submit();
+    }
+});
+</script>
+
+{% endblock %}

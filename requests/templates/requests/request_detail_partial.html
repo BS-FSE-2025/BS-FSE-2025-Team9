@@ -1,0 +1,53 @@
+<div class="detail-box">
+  <h3>Student Information</h3>
+  <div class="kv">
+    <div class="k">Name</div><div class="v">{{ r.student.name }}</div>
+    <div class="k">Student ID</div><div class="v">{{ r.student.student_id }}</div>
+    <div class="k">Email</div><div class="v">{{ r.student.email }}</div>
+  </div>
+</div>
+
+<div class="detail-box">
+  <h3>Request Information</h3>
+  <div class="kv">
+    <div class="k">Request ID</div><div class="v">{{ r.request_id }}</div>
+    <div class="k">Type</div><div class="v">{{ r.request_type }}</div>
+    <div class="k">Status</div><div class="v">{{ r.get_status_display }}</div>
+    <div class="k">Submitted</div><div class="v">{{ r.submitted_at|date:"n/j/Y" }}</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <div class="k" style="margin-bottom:6px;">Description</div>
+    <div class="detail-box" style="background:white;">{{ r.description }}</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <div class="k" style="margin-bottom:6px;">Attachments</div>
+    <div class="detail-box" style="background:white;">
+      <ul style="list-style: none; padding: 0;">
+        {% for a in r.attachments.all %}
+          <li style="margin-bottom: 8px;">
+            {% if a.file %}
+              <a href="{{ a.file.url }}" target="_blank" style="color: #007bff; text-decoration: none;">📎 {{ a.get_filename }}</a>
+            {% else %}
+              <span>📎 {{ a.get_filename }}</span>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>No attachments</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="detail-box">
+  <h3>Lecturer Feedback</h3>
+  <textarea id="lecturer_feedback" placeholder="Write feedback to student...">{{ r.lecturer_feedback }}</textarea>
+
+  <div class="action-buttons">
+    <button class="btn btn-approve" type="button">Approve</button>
+    <button class="btn btn-reject" type="button">Reject</button>
+    <button class="btn btn-info" type="button">Needs Info</button>
+  </div>
+</div>

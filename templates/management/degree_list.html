@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Degrees - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .page-subtitle {
+        color: var(--color-text-secondary);
+        margin-top: 0.25rem;
+    }
+    
+    .filters-bar {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        max-width: 320px;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 0.625rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        font-size: 0.875rem;
+        font-family: inherit;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--color-accent);
+    }
+    
+    .degrees-table {
+        width: 100%;
+    }
+    
+    .degrees-table th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-bg);
+    }
+    
+    .degrees-table td {
+        padding: 0.875rem 1rem;
+        font-size: 0.875rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .degrees-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .degrees-table tbody tr:hover {
+        background: var(--color-bg);
+    }
+    
+    .degree-code {
+        font-weight: 600;
+        color: var(--color-accent);
+    }
+    
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 0.75rem;
+    }
+    
+    .nav-tab {
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        color: var(--color-text-secondary);
+        font-weight: 500;
+        border-radius: var(--radius);
+        transition: all 0.15s ease;
+    }
+    
+    .nav-tab:hover {
+        color: var(--color-text);
+        background: var(--color-bg);
+    }
+    
+    .nav-tab.active {
+        color: var(--color-accent);
+        background: rgba(99, 102, 241, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Degree Programs</h1>
+        <p class="page-subtitle">Manage academic degree programs</p>
+    </div>
+    <a href="{% url 'management:degree_add' %}" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Degree
+    </a>
+</div>
+
+<div class="nav-tabs">
+    <a href="{% url 'management:degree_list' %}" class="nav-tab active">Degrees</a>
+    <a href="{% url 'management:course_list' %}" class="nav-tab">Courses</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="filters-bar">
+            <div class="search-box">
+                <input type="text" placeholder="Search by name or code..." 
+                       value="{{ search }}" onchange="window.location.href='?search=' + this.value">
+            </div>
+        </div>
+        
+        <table class="degrees-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Students</th>
+                    <th>Courses</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for degree in degrees %}
+                <tr>
+                    <td><span class="degree-code">{{ degree.code }}</span></td>
+                    <td>{{ degree.name }}</td>
+                    <td>{{ degree.student_count }}</td>
+                    <td>{{ degree.course_count }}</td>
+                    <td>
+                        {% if degree.is_active %}
+                        <span class="badge badge-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-error">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{% url 'management:degree_edit' degree.id %}" class="btn btn-outline btn-sm">Edit</a>
+                            <a href="{% url 'management:degree_delete' degree.id %}" class="btn btn-ghost btn-sm" style="color: var(--color-error);">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">No degrees found. Add your first degree program.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

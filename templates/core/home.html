@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCE Student Request Portal</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        [data-theme="dark"] {
+            --b1: 15 23 42;
+            --b2: 30 41 59;
+            --b3: 51 65 85;
+            --bc: 241 245 249;
+            --p: 99 102 241;
+            --pf: 79 70 229;
+            --pc: 255 255 255;
+            --s: 100 116 139;
+            --sf: 71 85 105;
+            --sc: 255 255 255;
+            --a: 129 140 248;
+            --af: 99 102 241;
+            --n: 51 65 85;
+            --nc: 241 245 249;
+        }
+        
+        .btn:focus-visible {
+            outline: 2px solid rgba(99, 102, 241, 0.4);
+            outline-offset: 2px;
+        }
+        
+        /* Override btn-primary with dark theme colors */
+        .btn-primary {
+            background-color: rgb(30, 41, 59) !important;
+            border: 1px solid rgba(148, 163, 184, 0.15) !important;
+            color: rgb(226, 232, 240) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background-color: rgb(51, 65, 85) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .btn-primary:focus {
+            background-color: rgb(51, 65, 85) !important;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15) !important;
+        }
+        
+        /* Override btn-ghost to remove pink/accent colors */
+        .btn-ghost {
+            color: rgb(148, 163, 184) !important;
+        }
+        
+        .btn-ghost:hover {
+            background-color: rgba(51, 65, 85, 0.5) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        /* Override btn-outline to remove pink/accent colors */
+        .btn-outline {
+            border-color: rgb(71, 85, 105) !important;
+            color: rgb(148, 163, 184) !important;
+            background-color: transparent !important;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgb(51, 65, 85) !important;
+            border-color: rgb(100, 116, 139) !important;
+            color: rgb(226, 232, 240) !important;
+        }
+        
+        /* Animated gradient background */
+        .hero-gradient {
+            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 100% 0%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+                        radial-gradient(ellipse at 0% 100%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
+        }
+        
+        /* Floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.5;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            top: -100px;
+            right: 10%;
+            animation-delay: 0s;
+        }
+        
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            bottom: 20%;
+            left: 5%;
+            animation-delay: -2s;
+        }
+        
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            top: 40%;
+            right: 5%;
+            animation-delay: -4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+        
+        /* Grid background */
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #c7d2fe 50%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-brand {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glass card */
+        .glass {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        /* Glow effects */
+        .glow-indigo {
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Animated border */
+        @keyframes border-dance {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .animated-border {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa, #8b5cf6, #6366f1);
+            background-size: 300% 100%;
+            animation: border-dance 4s ease infinite;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        
+        /* Feature card hover */
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .feature-icon {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Button glow */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-glow::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+        
+        .btn-glow:hover::after {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 font-sans antialiased overflow-x-hidden">
+    <!-- Background Effects -->
+    <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
+    <div class="fixed inset-0 grid-bg pointer-events-none"></div>
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="navbar bg-slate-900/50 backdrop-blur-xl border-b border-slate-800/50 sticky top-0 z-50 px-4 lg:px-8">
+        <div class="flex-1">
+            <a href="/" class="btn btn-ghost text-xl font-bold tracking-tight">
+                <span class="gradient-text-brand">SCE</span>
+                <span class="text-slate-300 font-light ml-1">Portal</span>
+            </a>
+        </div>
+        <div class="flex-none gap-2">
+            <a href="{% url 'core:login' %}" class="btn btn-ghost btn-sm">Sign In</a>
+            <a href="{% url 'core:signup' %}" class="btn btn-primary btn-sm btn-glow">Get Started</a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="relative min-h-[85vh] flex items-center justify-center px-4">
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <!-- Badge -->
+            <div data-aos="fade-down" data-aos-delay="100">
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-indigo-300 mb-8">
+                    <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+                    Student Request Management System
+                </span>
+            </div>
+            
+            <!-- Heading -->
+            <h1 data-aos="fade-up" data-aos-delay="200" class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+                <span class="gradient-text">Manage Your</span>
+                <br>
+                <span class="text-white">Academic Requests</span>
+            </h1>
+            
+            <!-- Subheading -->
+            <p data-aos="fade-up" data-aos-delay="300" class="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                A streamlined platform for submitting, tracking, and managing academic requests. 
+                Built for students, staff, and faculty.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div data-aos="fade-up" data-aos-delay="400" class="flex flex-wrap gap-4 justify-center">
+                <a href="{% url 'core:signup' %}" class="btn btn-primary btn-lg gap-2 btn-glow glow-indigo">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Get Started Free
+                </a>
+                <a href="{% url 'core:login' %}" class="btn btn-outline btn-lg border-slate-700 hover:bg-slate-800 hover:border-slate-600">
+                    Sign In
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <!-- Stats -->
+            <div data-aos="fade-up" data-aos-delay="500" class="flex flex-wrap justify-center gap-8 mt-16 pt-8 border-t border-slate-800/50">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">100%</div>
+                    <div class="text-sm text-slate-500">Secure</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">2FA</div>
+                    <div class="text-sm text-slate-500">Protected</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">24/7</div>
+                    <div class="text-sm text-slate-500">Access</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="relative py-24 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 data-aos="fade-up" class="text-3xl md:text-4xl font-bold text-white mb-4">
+                    Everything you need
+                </h2>
+                <p data-aos="fade-up" data-aos-delay="100" class="text-slate-400 text-lg">
+                    Powerful features to simplify your academic request workflow
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div data-aos="fade-up" data-aos-delay="100" class="feature-card glass rounded-2xl p-8 hover:border-indigo-500/30">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Easy Submissions</h3>
+                    <p class="text-slate-400 leading-relaxed">Submit study approvals, appeals, postponements, and general requests through intuitive forms.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div data-aos="fade-up" data-aos-delay="200" class="feature-card glass rounded-2xl p-8 hover:border-indigo-500/30">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-slate-500 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Real-time Tracking</h3>
+                    <p class="text-slate-400 leading-relaxed">Monitor your request status at every step of the approval process with live updates.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div data-aos="fade-up" data-aos-delay="300" class="feature-card glass rounded-2xl p-8 hover:border-indigo-500/30">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Secure Access</h3>
+                    <p class="text-slate-400 leading-relaxed">Two-factor authentication ensures only authorized users access the system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Roles Section -->
+    <section class="relative py-24 px-4 bg-slate-900/30">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 data-aos="fade-up" class="text-3xl md:text-4xl font-bold text-white mb-4">
+                    Built for everyone
+                </h2>
+                <p data-aos="fade-up" data-aos-delay="100" class="text-slate-400 text-lg">
+                    Supporting the entire academic workflow from submission to approval
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Role Cards -->
+                <div data-aos="zoom-in" data-aos-delay="100" class="glass rounded-2xl p-6 text-center hover:border-indigo-500/30 transition-all duration-300 hover:scale-105">
+                    <div class="text-4xl mb-4">🎓</div>
+                    <h4 class="font-semibold text-white mb-1">Students</h4>
+                    <p class="text-sm text-slate-500">Submit & track</p>
+                </div>
+                
+                <div data-aos="zoom-in" data-aos-delay="200" class="glass rounded-2xl p-6 text-center hover:border-slate-500/30 transition-all duration-300 hover:scale-105">
+                    <div class="text-4xl mb-4">📋</div>
+                    <h4 class="font-semibold text-white mb-1">Secretaries</h4>
+                    <p class="text-sm text-slate-500">Process & forward</p>
+                </div>
+                
+                <div data-aos="zoom-in" data-aos-delay="300" class="glass rounded-2xl p-6 text-center hover:border-indigo-500/30 transition-all duration-300 hover:scale-105">
+                    <div class="text-4xl mb-4">👨‍🏫</div>
+                    <h4 class="font-semibold text-white mb-1">Lecturers</h4>
+                    <p class="text-sm text-slate-500">Review & decide</p>
+                </div>
+                
+                <div data-aos="zoom-in" data-aos-delay="400" class="glass rounded-2xl p-6 text-center hover:border-slate-500/30 transition-all duration-300 hover:scale-105">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h4 class="font-semibold text-white mb-1">Department Heads</h4>
+                    <p class="text-sm text-slate-500">Final approval</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="relative py-24 px-4">
+        <div class="max-w-3xl mx-auto">
+            <div data-aos="zoom-in" class="relative rounded-3xl overflow-hidden">
+                <!-- Animated border -->
+                <div class="absolute inset-0 animated-border opacity-50"></div>
+                <div class="relative m-[1px] rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-12 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                        Ready to get started?
+                    </h2>
+                    <p class="text-slate-400 text-lg mb-8 max-w-lg mx-auto">
+                        Create your account and simplify your academic request process today.
+                    </p>
+                    <a href="{% url 'core:signup' %}" class="btn btn-primary btn-lg gap-2 btn-glow glow-indigo">
+                        Create Free Account
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-slate-800/50">
+        <div class="max-w-6xl mx-auto text-center text-slate-500 text-sm">
+            © 2026 SCE Student Request Portal. Built with 💜
+        </div>
+    </footer>
+    
+    <!-- Initialize AOS -->
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 50,
+        });
+    </script>
+</body>
+</html>

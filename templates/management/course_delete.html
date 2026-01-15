@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Delete Course - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .warning-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .warning-icon svg {
+        width: 32px;
+        height: 32px;
+        color: var(--color-error);
+    }
+    
+    .delete-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-text);
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .delete-message {
+        text-align: center;
+        color: var(--color-text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .delete-details {
+        background: var(--color-bg);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        color: var(--color-text-secondary);
+        font-size: 0.875rem;
+    }
+    
+    .detail-value {
+        font-weight: 500;
+        color: var(--color-text);
+    }
+    
+    .warning-box {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .warning-box p {
+        color: var(--color-error);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="card">
+        <div class="card-body" style="padding: 2rem;">
+            <div class="warning-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            
+            <h1 class="delete-title">Delete Course?</h1>
+            <p class="delete-message">This action cannot be undone.</p>
+            
+            <div class="delete-details">
+                <div class="detail-row">
+                    <span class="detail-label">Code</span>
+                    <span class="detail-value">{{ course.code }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Name</span>
+                    <span class="detail-value">{{ course.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Degrees</span>
+                    <span class="detail-value">{{ course.degrees.count }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Lecturers</span>
+                    <span class="detail-value">{{ course.lecturers.count }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Related requests</span>
+                    <span class="detail-value">{{ request_count }}</span>
+                </div>
+            </div>
+            
+            {% if request_count > 0 %}
+            <div class="warning-box">
+                <p>Warning: This course has {{ request_count }} request(s) linked. Pending requests will be routed to the Head of Department.</p>
+            </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="background: var(--color-error);">Delete Course</button>
+                    <a href="{% url 'management:course_list' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

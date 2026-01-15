@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Staff • Request Details</title>
+  <link rel="stylesheet" href="{% static 'staff/style.css' %}">
+</head>
+<body>
+  <div class="container">
+
+    <div class="topbar">
+      <div class="brand">
+        <h1>Request Details</h1>
+        <p>Manage this request: notes, missing documents, and forwarding workflow.</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost" href="{% url 'staff:request_list' %}">Back</a>
+      </div>
+    </div>
+
+    {% if messages %}
+      <ul class="msgs">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="card">
+      <div class="cardTitle">
+        <h2>{{ req.title }}</h2>
+        <span class="badge info"><span class="dot"></span>{{ req.status }}</span>
+      </div>
+      <p class="small">Created: {{ req.created_at }}</p>
+      <div class="hr"></div>
+      <p><b>Description:</b> <span class="small">{{ req.description|default:"No description provided." }}</span></p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="cardTitle">
+          <h2>Add Note</h2>
+          <span class="small">Notes are linked to this request.</span>
+        </div>
+
+        <form method="post" action="{% url 'staff:add_note' req.id %}">
+          {% csrf_token %}
+          <div class="field">
+            <label for="noteText">Note</label>
+            <textarea id="noteText" name="text" placeholder="Write a clear, detailed note..."></textarea>
+          </div>
+          <div class="field">
+            <button class="btn primary" type="submit">Save Note</button>
+          </div>
+        </form>
+
+        <div class="hr"></div>
+
+        <div class="cardTitle">
+          <h2>Previous Notes</h2>
+          <span class="small">Most recent first.</span>
+        </div>
+
+        <ul class="list">
+          {% for n in notes %}
+            <li>
+              {{ n.text }}
+              <span class="small"> — {{ n.created_at }}</span>
+            </li>
+          {% empty %}
+            <li class="small">No notes yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="cardTitle">
+          <h2>Request Additional Documents</h2>
+          <span class="small">Change status to “NEED_MORE_DOCS”.</span>
+        </div>
+
+        <form method="post" action="{% url 'staff:request_docs' req.id %}">
+          {% csrf_token %}
+
+          <div class="field">
+            <label for="docName">Missing document name</label>
+            <input class="input" id="docName" type="text" name="doc_name" placeholder="e.g., ID Copy, Transcript, …">
+          </div>
+
+          <div class="field">
+            <label for="instructions">Instructions (optional)</label>
+            <textarea id="instructions" name="instructions" placeholder="Explain what the student should upload..."></textarea>
+          </div>
+
+          <div class="field">
+            <button class="btn primary" type="submit">Send Document Request</button>
+          </div>
+        </form>
+
+        <div class="hr"></div>
+
+        <div class="cardTitle">
+          <h2>Missing Documents</h2>
+          <span class="small">Tracked per request.</span>
+        </div>
+
+        <ul class="list">
+          {% for d in missing_docs %}
+            <li>
+              {{ d.doc_name }}
+              {% if d.resolved %}
+                <span class="badge good"><span class="dot"></span>Received</span>
+              {% else %}
+                <span class="badge warn"><span class="dot"></span>Pending</span>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li class="small">No missing documents.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="cardTitle">
+        <h2>Send to Head of Department</h2>
+        <span class="small">Allowed only if no pending missing documents.</span>
+      </div>
+
+      <form method="post" action="{% url 'staff:send_to_hod' req.id %}">
+        {% csrf_token %}
+        <button class="btn primary" type="submit">Send to Head of Department</button>
+      </form>
+    </div>
+
+  </div>
+</body>
+</html>

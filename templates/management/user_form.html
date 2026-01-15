@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit User{% else %}Add User{% endif %} - SCE Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-text);
+        letter-spacing: -0.025em;
+    }
+    
+    .page-subtitle {
+        color: var(--color-text-secondary);
+        margin-top: 0.25rem;
+    }
+    
+    .form-container {
+        max-width: 560px;
+    }
+    
+    .form-section {
+        background: var(--color-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    @media (max-width: 500px) {
+        .form-row { grid-template-columns: 1fr; }
+    }
+    
+    .checkbox-field {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--color-bg);
+        border-radius: var(--radius);
+    }
+    
+    .checkbox-field input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--color-accent);
+    }
+    
+    .checkbox-content strong {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-text);
+    }
+    
+    .checkbox-content span {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .back-link {
+        display: inline-block;
+        margin-top: 1rem;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+    }
+    
+    .back-link:hover {
+        color: var(--color-text);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">{% if is_edit %}Edit User{% else %}Add New User{% endif %}</h1>
+    <p class="page-subtitle">{% if is_edit %}Update user account details{% else %}Create a new user account{% endif %}</p>
+</div>
+
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if error %}
+        <div class="alert alert-error" style="margin-bottom: 1.5rem;">{{ error }}</div>
+        {% endif %}
+        
+        <div class="form-section">
+            <div class="section-title">Personal Information</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="first_name">First Name *</label>
+                    <input type="text" name="first_name" id="first_name" class="form-control" 
+                           placeholder="John"
+                           value="{% if is_edit %}{{ user.first_name }}{% else %}{{ form_data.first_name }}{% endif %}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="last_name">Last Name *</label>
+                    <input type="text" name="last_name" id="last_name" class="form-control" 
+                           placeholder="Doe"
+                           value="{% if is_edit %}{{ user.last_name }}{% else %}{{ form_data.last_name }}{% endif %}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="email">Email *</label>
+                <input type="email" name="email" id="email" class="form-control" 
+                       placeholder="user@sce.ac.il"
+                       value="{% if is_edit %}{{ user.email }}{% else %}{{ form_data.email }}{% endif %}" required>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Role & Department</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="role">Role *</label>
+                    <select name="role" id="role" class="form-control" required onchange="toggleIdFields()">
+                        {% for value, label in role_choices %}
+                        <option value="{{ value }}" 
+                                {% if is_edit and user.role == value %}selected{% endif %}
+                                {% if not is_edit and form_data.role == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="department">Department</label>
+                    <select name="department" id="department" class="form-control">
+                        <option value="">Select</option>
+                        {% if is_edit %}
+                            {% with dept=user.department %}
+                            <option value="Software Engineering" {% if dept == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                            <option value="Computer Science" {% if dept == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                            <option value="Electrical Engineering" {% if dept == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                            <option value="Mechanical Engineering" {% if dept == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                            <option value="Civil Engineering" {% if dept == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                            <option value="Industrial Engineering" {% if dept == 'Industrial Engineering' %}selected{% endif %}>Industrial Engineering</option>
+                            {% endwith %}
+                        {% else %}
+                            {% with dept=form_data.department %}
+                            <option value="Software Engineering" {% if dept == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                            <option value="Computer Science" {% if dept == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                            <option value="Electrical Engineering" {% if dept == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                            <option value="Mechanical Engineering" {% if dept == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                            <option value="Civil Engineering" {% if dept == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                            <option value="Industrial Engineering" {% if dept == 'Industrial Engineering' %}selected{% endif %}>Industrial Engineering</option>
+                            {% endwith %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group" id="student_id_group">
+                    <label class="form-label" for="student_id">Student ID</label>
+                    <input type="text" name="student_id" id="student_id" class="form-control" 
+                           placeholder="123456789" pattern="\d{9}" maxlength="9"
+                           value="{% if is_edit %}{{ user.student_id|default:'' }}{% else %}{{ form_data.student_id }}{% endif %}">
+                    <p class="form-hint">Exactly 9 digits</p>
+                </div>
+                <div class="form-group" id="employee_id_group">
+                    <label class="form-label" for="employee_id">Employee ID</label>
+                    <input type="text" name="employee_id" id="employee_id" class="form-control" 
+                           placeholder="123456789"
+                           value="{% if is_edit %}{{ user.employee_id|default:'' }}{% else %}{{ form_data.employee_id }}{% endif %}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Security</div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password {% if not is_edit %}*{% endif %}</label>
+                <input type="password" name="password" id="password" class="form-control" 
+                       placeholder="{% if is_edit %}Leave blank to keep current{% else %}Enter password{% endif %}"
+                       {% if not is_edit %}required{% endif %}>
+                {% if is_edit %}
+                <p class="form-hint">Leave empty to keep current password</p>
+                {% endif %}
+            </div>
+            
+            {% if is_edit %}
+            <div class="form-group">
+                <div class="checkbox-field">
+                    <input type="checkbox" name="is_active" id="is_active" {% if user.is_active %}checked{% endif %}>
+                    <div class="checkbox-content">
+                        <strong>Account Active</strong>
+                        <span>Inactive accounts cannot log in</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if is_edit %}Update User{% else %}Create User{% endif %}
+            </button>
+            <a href="{% url 'management:user_list' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+    
+    <a href="{% url 'management:user_list' %}" class="back-link">← Back to Users</a>
+</div>
+
+<script>
+function toggleIdFields() {
+    const role = document.getElementById('role').value;
+    const studentIdGroup = document.getElementById('student_id_group');
+    const employeeIdGroup = document.getElementById('employee_id_group');
+    
+    if (role === 'student') {
+        studentIdGroup.style.display = 'block';
+        employeeIdGroup.style.display = 'none';
+    } else {
+        studentIdGroup.style.display = 'none';
+        employeeIdGroup.style.display = 'block';
+    }
+}
+
+toggleIdFields();
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{% block title %}Lecturer System{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'requests/css/style.css' %}">
+</head>
+<body>
+  {% block content %}{% endblock %}
+  <script defer src="{% static 'requests/js/dashboard.js' %}"></script>
+</body>
+</html>

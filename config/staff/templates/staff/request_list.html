@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Staff • Requests</title>
+  <link rel="stylesheet" href="{% static 'staff/style.css' %}">
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Staff Requests</h1>
+        <p>Review student requests, add notes, request documents, and forward to the Head of Department.</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost" href="/admin/">Admin</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardTitle">
+        <h2>Requests List</h2>
+        <span class="small">Total: {{ requests|length }}</span>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Open</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in requests %}
+              <tr>
+                <td>{{ r.title }}</td>
+                <td>
+                  <span class="badge info"><span class="dot"></span>{{ r.status }}</span>
+                </td>
+                <td>{{ r.created_at }}</td>
+                <td><a href="{% url 'staff:request_detail' r.id %}">View</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4">No requests found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
