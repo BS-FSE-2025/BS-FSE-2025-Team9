@@ -174,7 +174,7 @@ def login_with_verification(request: HttpRequest) -> HttpResponse:
                 expires_at=timezone.now() + timedelta(minutes=10)
             )
             
-            # Send email
+            # Send email (uses console backend in dev - check terminal for code)
             try:
                 send_mail(
                     subject='SCE Portal - Verification Code',

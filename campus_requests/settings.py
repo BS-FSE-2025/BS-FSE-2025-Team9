@@ -137,15 +137,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ============================================
-# EMAIL CONFIGURATION - REAL EMAIL SENDING FOR 2FA
+# EMAIL CONFIGURATION - 2FA Verification Codes
 # ============================================
-# Use custom backend to bypass SSL certificate issues
 EMAIL_BACKEND = 'core.email_backend.CustomEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'saied442001@gmail.com'
-EMAIL_HOST_PASSWORD = 'bgphdwiuzmwlqpex'  # App password
+EMAIL_HOST_USER = 'saied442001@gmail.com'          # <-- Your Gmail address
+EMAIL_HOST_PASSWORD = 'qodn omhx djnl tfqd'        # <-- PASTE YOUR NEW APP PASSWORD HERE (16 characters)
 DEFAULT_FROM_EMAIL = 'SCE Student Portal <saied442001@gmail.com>'
 EMAIL_TIMEOUT = 30

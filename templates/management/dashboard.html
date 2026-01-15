@@ -13,12 +13,12 @@
     .page-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--color-text);
+        color: #e2e8f0;
         letter-spacing: -0.025em;
     }
     
     .page-subtitle {
-        color: var(--color-text-secondary);
+        color: #94a3b8;
         margin-top: 0.25rem;
     }
     
@@ -38,22 +38,22 @@
     }
     
     .stat-card {
-        background: var(--color-card);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 1rem;
         padding: 1.25rem;
     }
     
     .stat-label {
         font-size: 0.8125rem;
-        color: var(--color-text-secondary);
+        color: #94a3b8;
         margin-bottom: 0.5rem;
     }
     
     .stat-value {
         font-size: 1.75rem;
         font-weight: 700;
-        color: var(--color-text);
+        color: #818cf8;
         letter-spacing: -0.025em;
     }
     
@@ -69,28 +69,29 @@
     }
     
     .action-card {
-        background: var(--color-card);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 1rem;
         padding: 1.5rem;
         text-decoration: none;
         color: inherit;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 1rem;
     }
     
     .action-card:hover {
-        border-color: var(--color-border-dark);
-        box-shadow: var(--shadow);
+        border-color: rgba(129, 140, 248, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
     }
     
     .action-icon {
         width: 48px;
         height: 48px;
-        background: var(--color-bg);
-        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -101,13 +102,13 @@
     .action-content h3 {
         font-size: 0.9375rem;
         font-weight: 600;
-        color: var(--color-text);
+        color: #818cf8;
         margin-bottom: 0.125rem;
     }
     
     .action-content p {
         font-size: 0.8125rem;
-        color: var(--color-text-muted);
+        color: #64748b;
     }
     
     .recent-users-table {
@@ -119,14 +120,15 @@
         padding: 0.75rem 1rem;
         font-size: 0.8125rem;
         font-weight: 500;
-        color: var(--color-text-secondary);
-        border-bottom: 1px solid var(--color-border);
+        color: #818cf8;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
     }
     
     .recent-users-table td {
         padding: 0.875rem 1rem;
         font-size: 0.875rem;
-        border-bottom: 1px solid var(--color-border);
+        border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+        color: #e2e8f0;
     }
     
     .recent-users-table tr:last-child td {
@@ -142,25 +144,84 @@
     .user-avatar {
         width: 36px;
         height: 36px;
-        background: var(--color-bg);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: var(--color-text-secondary);
+        color: white;
     }
     
     .user-info strong {
         display: block;
         font-weight: 500;
-        color: var(--color-text);
+        color: #e2e8f0;
     }
     
     .user-info span {
         font-size: 0.8125rem;
-        color: var(--color-text-muted);
+        color: #64748b;
+    }
+    
+    /* Role badges with soft colors */
+    .badge-default {
+        background: rgba(100, 116, 139, 0.2) !important;
+        color: #94a3b8 !important;
+        border: 1px solid rgba(100, 116, 139, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    /* Specific role colors */
+    .badge-default:contains("Student") {
+        background: rgba(96, 165, 250, 0.15) !important;
+        color: #60a5fa !important;
+    }
+    
+    .badge-success {
+        background: rgba(34, 211, 238, 0.15) !important;
+        color: #22d3ee !important;
+        border: 1px solid rgba(34, 211, 238, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-error {
+        background: rgba(248, 113, 113, 0.15) !important;
+        color: #f87171 !important;
+        border: 1px solid rgba(248, 113, 113, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    /* Card styling */
+    .card {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #818cf8;
     }
 </style>
 {% endblock %}
@@ -252,7 +313,7 @@
                     </div>
                 </td>
                 <td><span class="badge badge-default">{{ u.get_role_display }}</span></td>
-                <td>{{ u.department|default:"—" }}</td>
+                <td>{% if u.degree %}{{ u.degree.name }}{% else %}—{% endif %}</td>
                 <td>
                     {% if u.is_active %}
                     <span class="badge badge-success">Active</span>

@@ -6,7 +6,28 @@
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8" data-aos="fade-down">
     <div>
         <h1 class="text-3xl font-bold text-white tracking-tight">Secretary Dashboard</h1>
-        <p class="text-slate-400 mt-1">Process and forward incoming requests</p>
+        <p class="text-slate-400 mt-1">
+            Process and forward incoming requests
+            {% if secretary_department %}
+            <span class="ml-2 badge bg-indigo-500/20 text-indigo-400 border-indigo-500/30">{{ secretary_department.name }}</span>
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- View Toggle -->
+    <div class="flex gap-2">
+        <a href="?view=requests" class="btn btn-sm {% if view_mode == 'requests' or not view_mode %}btn-primary{% else %}btn-ghost border border-slate-700{% endif %}">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Requests
+        </a>
+        <a href="?view=lecturers" class="btn btn-sm {% if view_mode == 'lecturers' %}btn-primary{% else %}btn-ghost border border-slate-700{% endif %}">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Lecturers ({{ department_lecturers|length }})
+        </a>
     </div>
 </div>
 
@@ -73,6 +94,70 @@
     </div>
 </div>
 
+{% if view_mode == 'lecturers' %}
+<!-- Lecturers Card -->
+<div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-700/50">
+        <h2 class="text-lg font-semibold text-white">
+            Department Lecturers
+            {% if secretary_department %}
+            <span class="ml-2 text-sm font-normal text-slate-400">{{ secretary_department.name }}</span>
+            {% endif %}
+        </h2>
+        <p class="text-slate-500 text-sm mt-1">Lecturers available to receive forwarded requests</p>
+    </div>
+    
+    <div class="p-6">
+        {% if department_lecturers %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for lecturer in department_lecturers %}
+            <div class="p-5 rounded-xl bg-slate-800/30 border border-slate-700/30 hover:border-indigo-500/30 hover:bg-slate-800/50 transition-all duration-300"
+                 data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                        <span class="text-lg font-bold text-white">{{ lecturer.first_name.0 }}{{ lecturer.last_name.0 }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-white font-semibold truncate">{{ lecturer.get_full_name }}</h3>
+                        <p class="text-slate-400 text-sm truncate">{{ lecturer.email }}</p>
+                        {% if lecturer.degree %}
+                        <span class="badge bg-slate-700/50 text-slate-300 text-xs mt-2">{{ lecturer.degree.code }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Show courses taught by this lecturer -->
+                {% if lecturer.taught_courses.exists %}
+                <div class="mt-4 pt-4 border-t border-slate-700/50">
+                    <div class="text-xs text-slate-500 mb-2">Courses:</div>
+                    <div class="flex flex-wrap gap-1">
+                        {% for course in lecturer.taught_courses.all|slice:":3" %}
+                        <span class="badge bg-indigo-500/20 text-indigo-400 border-indigo-500/30 text-xs">{{ course.code }}</span>
+                        {% endfor %}
+                        {% if lecturer.taught_courses.count > 3 %}
+                        <span class="text-xs text-slate-500">+{{ lecturer.taught_courses.count|add:"-3" }} more</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-16">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2">No lecturers found</h3>
+            <p class="text-slate-500">No lecturers are assigned to your department yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
 <!-- Requests Card -->
 <div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-2xl overflow-hidden">
     <!-- Card Header -->
@@ -176,4 +261,5 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 {% endblock %}

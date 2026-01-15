@@ -13,12 +13,12 @@
     .page-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--color-text);
+        color: #e2e8f0;
         letter-spacing: -0.025em;
     }
     
     .page-subtitle {
-        color: var(--color-text-secondary);
+        color: #94a3b8;
         margin-top: 0.25rem;
     }
     
@@ -39,25 +39,34 @@
     .search-box input {
         width: 100%;
         padding: 0.625rem 1rem;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 0.5rem;
         font-size: 0.875rem;
         font-family: inherit;
+        background: rgba(15, 23, 42, 0.5);
+        color: #e2e8f0;
     }
     
     .search-box input:focus {
         outline: none;
-        border-color: var(--color-accent);
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
     }
     
     .filter-select {
         padding: 0.625rem 1rem;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 0.5rem;
         font-size: 0.875rem;
         font-family: inherit;
-        background: var(--color-card);
+        background: rgba(30, 41, 59, 0.7);
+        color: #e2e8f0;
         min-width: 150px;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #818cf8;
     }
     
     .users-table {
@@ -69,15 +78,16 @@
         padding: 0.75rem 1rem;
         font-size: 0.8125rem;
         font-weight: 500;
-        color: var(--color-text-secondary);
-        border-bottom: 1px solid var(--color-border);
-        background: var(--color-bg);
+        color: #818cf8;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        background: rgba(15, 23, 42, 0.3);
     }
     
     .users-table td {
         padding: 0.875rem 1rem;
         font-size: 0.875rem;
-        border-bottom: 1px solid var(--color-border);
+        border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+        color: #e2e8f0;
     }
     
     .users-table tr:last-child td {
@@ -85,7 +95,7 @@
     }
     
     .users-table tbody tr:hover {
-        background: var(--color-bg);
+        background: rgba(15, 23, 42, 0.4);
     }
     
     .user-cell {
@@ -97,31 +107,79 @@
     .user-avatar {
         width: 36px;
         height: 36px;
-        background: var(--color-bg);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: var(--color-text-secondary);
+        color: white;
         flex-shrink: 0;
     }
     
     .user-info strong {
         display: block;
         font-weight: 500;
-        color: var(--color-text);
+        color: #e2e8f0;
     }
     
     .user-info span {
         font-size: 0.8125rem;
-        color: var(--color-text-muted);
+        color: #64748b;
     }
     
     .actions-cell {
         display: flex;
         gap: 0.5rem;
+    }
+    
+    /* Role badges - Soft eye-friendly colors */
+    .badge-default {
+        background: rgba(100, 116, 139, 0.2) !important;
+        color: #94a3b8 !important;
+        border: 1px solid rgba(100, 116, 139, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-success {
+        background: rgba(34, 211, 238, 0.15) !important;
+        color: #22d3ee !important;
+        border: 1px solid rgba(34, 211, 238, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-error {
+        background: rgba(248, 113, 113, 0.15) !important;
+        color: #f87171 !important;
+        border: 1px solid rgba(248, 113, 113, 0.3) !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    /* Card styling */
+    .card {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Delete button */
+    .btn-ghost[style*="color: var(--color-error)"] {
+        color: #f87171 !important;
     }
 </style>
 {% endblock %}
@@ -179,7 +237,7 @@
                         </div>
                     </td>
                     <td><span class="badge badge-default">{{ u.get_role_display }}</span></td>
-                    <td>{{ u.department|default:"—" }}</td>
+                    <td>{% if u.degree %}{{ u.degree.name }}{% else %}—{% endif %}</td>
                     <td>
                         {% if u.is_active %}
                         <span class="badge badge-success">Active</span>
