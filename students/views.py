@@ -239,7 +239,8 @@ def profile_edit(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
-        
+        messages.success(request, "Your account information has been updated successfully.")
+
         current_password = request.POST.get("current_password", "")
         new_password = request.POST.get("new_password", "")
         confirm_password = request.POST.get("confirm_password", "")
