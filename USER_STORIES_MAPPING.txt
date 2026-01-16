@@ -1,0 +1,11 @@
+BSSEF25T9-160: Lecturer – Open and Review Request Details
+-> linked existing implementation in lecturers app + templates
+
+BSSEF25T9-161: Lecturer – Approve or Reject a Request
+-> linked existing implementation (status update logic in views)
+
+BSSEF25T9-162: Lecturer – Add Decision Comments
+-> linked existing implementation (feedback field + UI)
+
+BSSEF25T9-157: Head of Department Flow
+-> linked existing implementation in head_of_dept app
