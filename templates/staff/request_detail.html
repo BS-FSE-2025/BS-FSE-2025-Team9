@@ -287,7 +287,7 @@
         <form action="{% url 'staff:add_note' req.id %}" method="post">
             {% csrf_token %}
             <div class="form-group" style="margin-bottom: 1rem;">
-                <textarea name="text" class="form-control" rows="3" placeholder="Add a note about this request..."></textarea>
+               <textarea name="text" class="form-control" rows="3" placeholder="Add an internal note (staff only)..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Add Note</button>
         </form>
