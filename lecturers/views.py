@@ -13,6 +13,8 @@ from requests_unified.models import (
     Request, StatusHistory, Notification, ApprovalLog, Comment
 )
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 def lecturer_required(view_func):
     """Decorator to ensure user is a lecturer."""
@@ -25,6 +27,8 @@ def lecturer_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
@@ -71,6 +75,8 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     }
     return render(request, "lecturers/dashboard.html", context)
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
@@ -91,6 +97,8 @@ def request_detail(request: HttpRequest, request_id: int) -> HttpResponse:
     }
     return render(request, "lecturers/request_detail.html", context)
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
@@ -133,6 +141,8 @@ def approve_request(request: HttpRequest, request_id: int) -> HttpResponse:
     
     return redirect("lecturers:request_detail", request_id=request_id)
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
@@ -179,6 +189,8 @@ def reject_request(request: HttpRequest, request_id: int) -> HttpResponse:
     
     return redirect("lecturers:request_detail", request_id=request_id)
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
@@ -225,6 +237,8 @@ def needs_info(request: HttpRequest, request_id: int) -> HttpResponse:
     
     return redirect("lecturers:request_detail", request_id=request_id)
 
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 @login_required
 @lecturer_required
