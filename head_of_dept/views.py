@@ -251,7 +251,7 @@ def reject_request(request: HttpRequest, request_id: int) -> HttpResponse:
     
     return redirect("head_of_dept:request_detail", request_id=request_id)
 
-
+# BSSEF25T9-67: HOD – Add final notes visible to student (existing add_final_notes)
 @login_required
 @hod_required
 def add_final_notes(request: HttpRequest, request_id: int) -> HttpResponse:
