@@ -228,7 +228,7 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     messages.success(request, "You have been logged out.")
     return redirect("core:home")
 
-
+# BSSEF25T9-2: Log-in (uses existing login_with_verification + verify_code)
 def login_with_verification(request: HttpRequest) -> HttpResponse:
     """
     Step 1: Username/Email + Password authentication
