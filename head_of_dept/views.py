@@ -37,7 +37,7 @@ def hod_required_api(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-
+# BSSEF25T9-65: HOD – View Pending Requests (existing dashboard/api_pending_requests)
 @login_required
 @hod_required
 def dashboard(request: HttpRequest) -> HttpResponse:
