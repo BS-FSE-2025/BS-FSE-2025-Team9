@@ -90,8 +90,9 @@ python app.py
 3. Access the application:
    - Open your browser and navigate to `http://localhost:5000`
    - Use the quick login buttons or login with credentials:
-     - Email: `admin@ac.sce.ac.il.com`
+     - Email: `admin@ac.sce.ac.il`
      - Password: `admin`
+     - If login is made via this email address, a password will be sent to the email address of a member of the development team.
 
 ## Quick Login
 
@@ -139,8 +140,8 @@ The system includes sample data that is automatically created on first run:
 
 ## Technologies Used
 
-- **Backend**: Flask (Python),Django
-- **Database**: SQLite with SQLAlchemy ORM,Django
+- **Backend**: Python,Django
+- **Database**: Python
 - **Frontend**: HTML5, CSS3 ,Django
 - **Styling**: Modern CSS with CSS Variables
 
