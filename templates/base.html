@@ -77,6 +77,37 @@
             --btn-focus-scale: 0.98;
         }
         
+        /* Global Color Variables - Eye-Friendly Palette */
+        :root {
+            /* Text Colors - Soft whites and grays */
+            --color-text: #e2e8f0;              /* slate-200 - Main text */
+            --color-text-secondary: #94a3b8;    /* slate-400 - Secondary text */
+            --color-text-muted: #64748b;        /* slate-500 - Muted text */
+            
+            /* Background Colors */
+            --color-bg: #0f172a;                /* slate-950 - Page background */
+            --color-card: #1e293b;              /* slate-800 - Card background */
+            
+            /* Border Colors */
+            --color-border: #334155;            /* slate-700 - Default border */
+            --color-border-dark: #475569;       /* slate-600 - Darker border */
+            
+            /* Accent Color - Soft Indigo instead of Pink */
+            --color-accent: #818cf8;            /* indigo-400 - Soft accent */
+            
+            /* Status Colors - All eye-friendly */
+            --color-success: #22d3ee;           /* cyan-400 - Success (instead of green) */
+            --color-warning: #fbbf24;           /* amber-400 - Warning */
+            --color-error: #f87171;             /* red-400 - Error */
+            --color-info: #60a5fa;              /* blue-400 - Info */
+            --color-error-bg: rgba(248, 113, 113, 0.1);  /* Error background */
+            
+            /* Spacing */
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        
         /* Override focus rings to be more subtle */
         .btn:focus-visible {
             outline: 2px solid rgba(99, 102, 241, 0.5) !important;
@@ -266,6 +297,106 @@
         .priority-high { @apply bg-red-500/20 text-red-400 border border-red-500/30; }
         .priority-medium { @apply bg-amber-500/20 text-amber-400 border border-amber-500/30; }
         .priority-low { @apply bg-slate-500/20 text-slate-400 border border-slate-500/30; }
+        
+        /* Badge overrides - Remove all pink/magenta colors */
+        .badge {
+            background-color: rgba(100, 116, 139, 0.2) !important;
+            color: #94a3b8 !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+        }
+        
+        .badge-default {
+            background-color: rgba(100, 116, 139, 0.2) !important;
+            color: #94a3b8 !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+        }
+        
+        .badge-success, .badge-active {
+            background-color: rgba(34, 211, 238, 0.15) !important;
+            color: #22d3ee !important;
+            border: 1px solid rgba(34, 211, 238, 0.3) !important;
+        }
+        
+        .badge-error, .badge-danger {
+            background-color: rgba(248, 113, 113, 0.15) !important;
+            color: #f87171 !important;
+            border: 1px solid rgba(248, 113, 113, 0.3) !important;
+        }
+        
+        .badge-warning {
+            background-color: rgba(251, 191, 36, 0.15) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+        }
+        
+        .badge-info {
+            background-color: rgba(96, 165, 250, 0.15) !important;
+            color: #60a5fa !important;
+            border: 1px solid rgba(96, 165, 250, 0.3) !important;
+        }
+        
+        .badge-primary {
+            background-color: rgba(129, 140, 248, 0.15) !important;
+            color: #818cf8 !important;
+            border: 1px solid rgba(129, 140, 248, 0.3) !important;
+        }
+        
+        /* Role badges - specific soft colors */
+        .badge[class*="student"], .badge:has(+ *:contains("Student")) {
+            background-color: rgba(96, 165, 250, 0.15) !important;
+            color: #60a5fa !important;
+            border: 1px solid rgba(96, 165, 250, 0.3) !important;
+        }
+        
+        /* Card styles */
+        .card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Form controls */
+        .form-control {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 0.625rem 0.875rem;
+            color: var(--color-text);
+            font-size: 0.875rem;
+            width: 100%;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
         
         /* Card hover effect */
         .card-hover {
@@ -567,8 +698,8 @@
         {% if messages %}
         <div class="mb-6 space-y-3" data-aos="fade-down">
             {% for message in messages %}
-            <div class="alert {% if message.tags == 'success' %}alert-info{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
+            <div class="rounded-xl p-4 flex items-center gap-3 {% if message.tags == 'success' %}bg-cyan-500/10 border border-cyan-500/30 text-cyan-400{% elif message.tags == 'error' %}bg-red-500/10 border border-red-500/30 text-red-400{% elif message.tags == 'warning' %}bg-amber-500/10 border border-amber-500/30 text-amber-400{% else %}bg-blue-500/10 border border-blue-500/30 text-blue-400{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {% if message.tags == 'success' %}
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     {% elif message.tags == 'error' %}

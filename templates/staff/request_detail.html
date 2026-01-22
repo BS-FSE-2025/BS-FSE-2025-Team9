@@ -1,264 +1,296 @@
 {% extends "base.html" %}
 {% block title %}Review Request {{ req.request_id }} - SCE Portal{% endblock %}
 
-{% block extra_css %}
-<style>
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        margin-bottom: 1.5rem;
-    }
-    
-    .back-link:hover {
-        color: var(--color-text);
-    }
-    
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 2rem;
-    }
-    
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-text);
-        letter-spacing: -0.025em;
-    }
-    
-    .request-id {
-        font-size: 0.875rem;
-        color: var(--color-text-muted);
-        margin-top: 0.25rem;
-    }
-    
-    .detail-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    @media (max-width: 768px) {
-        .detail-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    
-    .detail-item {
-        font-size: 0.875rem;
-    }
-    
-    .detail-label {
-        color: var(--color-text-muted);
-        margin-bottom: 0.25rem;
-    }
-    
-    .detail-value {
-        color: var(--color-text);
-        font-weight: 500;
-    }
-    
-    .description-box {
-        padding: 1rem;
-        background: var(--color-bg);
-        border-radius: var(--radius);
-        white-space: pre-wrap;
-        line-height: 1.7;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--color-border);
-        margin-top: 1.5rem;
-    }
-    
-    .btn-warning {
-        background: var(--color-warning);
-        color: white;
-    }
-    
-    .btn-warning:hover {
-        background: #b45309;
-    }
-    
-    .btn-success {
-        background: var(--color-success);
-        color: white;
-    }
-    
-    .btn-success:hover {
-        background: #047857;
-    }
-    
-    .documents-list, .notes-list, .timeline {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .documents-list li {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid var(--color-border);
-    }
-    
-    .documents-list li:last-child {
-        border-bottom: none;
-    }
-    
-    .doc-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-text);
-        text-decoration: none;
-        font-weight: 500;
-    }
-    
-    .doc-link:hover {
-        color: var(--color-accent);
-    }
-    
-    .timeline-item {
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--color-border);
-    }
-    
-    .timeline-item:last-child {
-        border-bottom: none;
-    }
-    
-    .timeline-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .timeline-description {
-        color: var(--color-text);
-        margin-bottom: 0.25rem;
-    }
-    
-    .timeline-meta {
-        font-size: 0.8125rem;
-        color: var(--color-text-muted);
-    }
-    
-    .missing-doc-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--color-border);
-    }
-    
-    .missing-doc-item:last-child {
-        border-bottom: none;
-    }
-    
-    .missing-doc-info strong {
-        display: block;
-        color: var(--color-text);
-        margin-bottom: 0.25rem;
-    }
-    
-    .missing-doc-info p {
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.25rem;
-    }
-    
-    .missing-doc-info small {
-        font-size: 0.8125rem;
-        color: var(--color-text-muted);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<a href="{% url 'staff:dashboard' %}" class="back-link">← Back to Dashboard</a>
+<!-- Back Navigation -->
+<a href="{% url 'staff:dashboard' %}" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6 group">
+    <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to Dashboard</span>
+</a>
 
-<div class="page-header">
+<!-- Page Header -->
+<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8" data-aos="fade-down">
     <div>
-        <h1 class="page-title">{{ req.title }}</h1>
-        <div class="request-id">{{ req.request_id }}</div>
+        <div class="flex items-center gap-3 mb-2">
+            <span class="font-mono text-sm text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-lg">{{ req.request_id }}</span>
+            <span class="badge status-{{ req.status }} text-xs px-3 py-1 rounded-full">{{ req.get_status_display }}</span>
+        </div>
+        <h1 class="text-2xl lg:text-3xl font-bold text-white tracking-tight">{{ req.title }}</h1>
     </div>
-    <span class="badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+    
+    <div class="flex items-center gap-3">
+        <span class="badge priority-{{ req.priority }} text-xs px-4 py-2 rounded-lg">{{ req.get_priority_display }} Priority</span>
+        <span class="badge bg-slate-700/50 text-slate-300 border-slate-600/50 text-xs px-4 py-2 rounded-lg">{{ req.request_type }}</span>
+    </div>
 </div>
 
-<div class="card" style="margin-bottom: 1.5rem;">
-    <div class="card-body">
-        <div class="detail-grid">
-            <div class="detail-item">
-                <div class="detail-label">Student</div>
-                <div class="detail-value">{{ req.student.get_full_name|default:req.student.email }}</div>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Main Content Column -->
+    <div class="xl:col-span-2 space-y-6">
+        
+        <!-- Request Details Card -->
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Request Details
+                </h2>
             </div>
-            <div class="detail-item">
-                <div class="detail-label">Type</div>
-                <div class="detail-value">{{ req.request_type }}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Priority</div>
-                <div class="detail-value"><span class="badge priority-{{ req.priority }}">{{ req.get_priority_display }}</span></div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Submitted</div>
-                <div class="detail-value">{{ req.created_at|date:"M d, Y" }}</div>
+            <div class="p-6">
+                <!-- Info Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider">Student</div>
+                        <div class="text-white font-medium">{{ req.student.get_full_name|default:req.student.email }}</div>
+                        <div class="text-xs text-slate-400">{{ req.student.email }}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider">Submitted</div>
+                        <div class="text-white font-medium">{{ req.created_at|date:"M d, Y" }}</div>
+                        <div class="text-xs text-slate-400">{{ req.created_at|time:"H:i" }}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider">Last Updated</div>
+                        <div class="text-white font-medium">{{ req.updated_at|date:"M d, Y" }}</div>
+                        <div class="text-xs text-slate-400">{{ req.updated_at|time:"H:i" }}</div>
+                    </div>
+                    {% if req.course %}
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider">Course</div>
+                        <div class="text-white font-medium">{{ req.course.code }}</div>
+                        <div class="text-xs text-slate-400">{{ req.course.name }}</div>
+                    </div>
+                    {% elif req.course_name %}
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider">Department</div>
+                        <div class="text-white font-medium">{{ req.course_name }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Description -->
+                <div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider mb-3">Description</div>
+                    <div class="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                        <p class="text-slate-300 whitespace-pre-wrap leading-relaxed">{{ req.description }}</p>
+                    </div>
+                </div>
             </div>
         </div>
         
-        {% if req.course %}
-        <div class="detail-item" style="margin-bottom: 1rem;">
-            <div class="detail-label">Course</div>
-            <div class="detail-value">{{ req.course.code }} - {{ req.course.name }}</div>
-        </div>
-        {% endif %}
-        
-        <div class="detail-item">
-            <div class="detail-label" style="margin-bottom: 0.5rem;">Description</div>
-            <div class="description-box">{{ req.description }}</div>
-        </div>
-        
-        {% if req.status in 'new,in_progress,needs_info' %}
-        <div class="action-buttons">
-            {% if can_forward_to_lecturer %}
-            <form action="{% url 'staff:send_to_lecturer' req.id %}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
-                {% csrf_token %}
-                <select name="lecturer_id" class="form-control" style="width: auto; min-width: 200px;" required>
-                    <option value="">Select Lecturer...</option>
-                    {% for lecturer in available_lecturers %}
-                    <option value="{{ lecturer.id }}">{{ lecturer.get_full_name }}</option>
+        <!-- Attached Documents -->
+        {% if documents %}
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="150">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                    </svg>
+                    Attached Documents
+                    <span class="ml-auto badge bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">{{ documents|length }}</span>
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {% for doc in documents %}
+                    <a href="{{ doc.file.url }}" target="_blank" 
+                       class="flex items-center gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30 hover:border-emerald-500/30 hover:bg-slate-800/50 transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-white font-medium truncate group-hover:text-emerald-400 transition-colors">{{ doc.get_filename }}</div>
+                            <div class="text-xs text-slate-500">Click to view</div>
+                        </div>
+                        <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
                     {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-primary">Send to Lecturer</button>
-            </form>
-            {% else %}
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-muted); font-size: 0.875rem;">
-                {% if not req.course %}
-                <span>⚠️ No course assigned - cannot forward to lecturer</span>
-                {% else %}
-                <span>⚠️ No lecturers assigned to this course</span>
-                {% endif %}
+                </div>
             </div>
-            {% endif %}
-            
-            <form action="{% url 'staff:send_to_hod' req.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-warning">Send to HOD</button>
-            </form>
         </div>
         {% endif %}
+        
+        <!-- Status History -->
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Status History
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="relative">
+                    <!-- Timeline line -->
+                    <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-700/50"></div>
+                    
+                    <div class="space-y-6">
+                        {% for history in status_history %}
+                        <div class="relative pl-10">
+                            <!-- Timeline dot -->
+                            <div class="absolute left-2 top-1 w-4 h-4 rounded-full bg-slate-800 border-2 border-purple-500"></div>
+                            
+                            <div class="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="badge status-{{ history.status }} text-xs px-2 py-1 rounded">{{ history.get_status_display }}</span>
+                                    <span class="text-xs text-slate-500">{{ history.created_at|date:"M d, Y" }} at {{ history.created_at|time:"H:i" }}</span>
+                                </div>
+                                <p class="text-slate-300 text-sm">{{ history.description }}</p>
+                                {% if history.changed_by %}
+                                <div class="text-xs text-slate-500 mt-2">by {{ history.changed_by.get_full_name }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-8 text-slate-500">No status history available</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notes -->
+        {% if notes %}
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="250">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                    </svg>
+                    Staff Notes
+                    <span class="ml-auto badge bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">{{ notes|length }}</span>
+                </h2>
+            </div>
+            <div class="p-6 space-y-4">
+                {% for note in notes %}
+                <div class="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                    <p class="text-slate-300 mb-3">{{ note.note }}</p>
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>{{ note.author.get_full_name }}</span>
+                        <span>{{ note.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar Actions Column -->
+    <div class="space-y-6">
+        
+        <!-- Quick Actions Card -->
+        {% if req.status in 'new,in_progress,needs_info' %}
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+            <div class="px-6 py-4 border-b border-slate-700/50 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Quick Actions
+                </h2>
+            </div>
+            <div class="p-6 space-y-4">
+                <!-- Send to Lecturer -->
+                {% if can_forward_to_lecturer %}
+                <div class="space-y-3">
+                    <label class="text-sm font-medium text-slate-300">Forward to Lecturer</label>
+                    <form action="{% url 'staff:send_to_lecturer' req.id %}" method="post" class="space-y-3">
+                        {% csrf_token %}
+                        <select name="lecturer_id" required
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                            <option value="">Select Lecturer...</option>
+                            {% if course_lecturers %}
+                            <optgroup label="Course Lecturers {% if req.course %}({{ req.course.code }}){% endif %}">
+                                {% for lecturer in course_lecturers %}
+                                <option value="{{ lecturer.id }}">{{ lecturer.get_full_name }} ⭐</option>
+                                {% endfor %}
+                            </optgroup>
+                            {% endif %}
+                            {% if department_lecturers %}
+                            <optgroup label="Department Lecturers{% if secretary_department %} ({{ secretary_department.code }}){% endif %}">
+                                {% for lecturer in department_lecturers %}
+                                {% if lecturer not in course_lecturers %}
+                                <option value="{{ lecturer.id }}">{{ lecturer.get_full_name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </optgroup>
+                            {% endif %}
+                        </select>
+                        <button type="submit" class="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                            Send to Lecturer
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                    <div class="flex items-center gap-3 text-slate-400">
+                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span class="text-sm">No lecturers available in your department</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-700/50"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs">
+                        <span class="px-3 bg-slate-900 text-slate-500">or</span>
+                    </div>
+                </div>
+                
+                <!-- Send to HOD -->
+                <form action="{% url 'staff:send_to_hod' req.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full btn bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        Send to Head of Dept
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Request Already Processed -->
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                    {% if req.status == 'approved' %}
+                    <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {% elif req.status == 'rejected' %}
+                    <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {% else %}
+                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                <h3 class="text-white font-semibold mb-2">Request {{ req.get_status_display }}</h3>
+                <p class="text-slate-400 text-sm">This request has been processed and is no longer editable.</p>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 </div>
 
@@ -288,93 +320,100 @@
             {% csrf_token %}
             <div class="form-group" style="margin-bottom: 1rem;">
                <textarea name="text" class="form-control" rows="3" placeholder="Add an internal note (staff only)..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Note</button>
-        </form>
-    </div>
-</div>
 
-<div class="card" style="margin-bottom: 1.5rem;">
-    <div class="card-header">
-        <h3 class="card-title">Request Missing Documents</h3>
-    </div>
-    <div class="card-body">
-        <form action="{% url 'staff:request_docs' req.id %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label class="form-label" for="doc_name">Document Name *</label>
-                <input type="text" name="doc_name" id="doc_name" class="form-control" placeholder="e.g., Medical Certificate">
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label" for="instructions">Instructions</label>
-                <textarea name="instructions" id="instructions" class="form-control" rows="2" placeholder="Instructions for the student..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-warning">Request Document</button>
-        </form>
-    </div>
-</div>
+        <!-- Add Note Card -->
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="150">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Add Note
+                </h2>
 
-{% if missing_docs %}
-<div class="card" style="margin-bottom: 1.5rem;">
-    <div class="card-header">
-        <h3 class="card-title">Missing Documents</h3>
-    </div>
-    <div class="card-body" style="padding-top: 0;">
-        {% for doc in missing_docs %}
-        <div class="missing-doc-item">
-            <div class="missing-doc-info">
-                <strong>{{ doc.doc_name }}</strong>
-                {% if doc.instructions %}<p>{{ doc.instructions }}</p>{% endif %}
-                <small>Requested: {{ doc.created_at|date:"M d, Y" }}</small>
             </div>
-            {% if doc.resolved %}
-            <span class="badge badge-success">Received</span>
-            {% else %}
-            <form action="{% url 'staff:resolve_doc' doc.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-sm">Mark Received</button>
-            </form>
-            {% endif %}
+            <div class="p-6">
+                <form action="{% url 'staff:add_note' req.id %}" method="post" class="space-y-4">
+                    {% csrf_token %}
+                   <textarea name="text" class="form-control" rows="3" placeholder="Add an internal note (staff only)..."></textarea>
+                              class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors resize-none"></textarea>
+                    <button type="submit" class="w-full btn bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-xl font-medium transition-colors">
+                        Add Note
+                    </button>
+                </form>
+            </div>
         </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-
-{% if notes %}
-<div class="card" style="margin-bottom: 1.5rem;">
-    <div class="card-header">
-        <h3 class="card-title">Notes</h3>
-    </div>
-    <div class="card-body" style="padding-top: 0;">
-        <ul class="timeline">
-            {% for note in notes %}
-            <li class="timeline-item">
-                <p class="timeline-description">{{ note.note }}</p>
-                <span class="timeline-meta">{{ note.author.get_full_name }} — {{ note.created_at|date:"M d, Y H:i" }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-{% endif %}
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Status History</h3>
-    </div>
-    <div class="card-body" style="padding-top: 0;">
-        <ul class="timeline">
-            {% for history in status_history %}
-            <li class="timeline-item">
-                <div class="timeline-header">
-                    <span class="badge status-{{ history.status }}">{{ history.get_status_display }}</span>
+        
+        <!-- Request Documents Card -->
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Request Document
+                </h2>
+            </div>
+            <div class="p-6">
+                <form action="{% url 'staff:request_docs' req.id %}" method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="text-sm font-medium text-slate-300 mb-2 block">Document Name *</label>
+                        <input type="text" name="doc_name" required placeholder="e.g., Medical Certificate"
+                               class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-slate-300 mb-2 block">Instructions (Optional)</label>
+                        <textarea name="instructions" rows="2" placeholder="Instructions for the student..."
+                                  class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full btn bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-medium transition-colors">
+                        Request Document
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Missing Documents Card -->
+        {% if missing_docs %}
+        <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="250">
+            <div class="px-6 py-4 border-b border-slate-700/50">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Missing Documents
+                    <span class="ml-auto badge bg-red-500/20 text-red-400 border-red-500/30 text-xs">{{ missing_docs|length }}</span>
+                </h2>
+            </div>
+            <div class="p-6 space-y-3">
+                {% for doc in missing_docs %}
+                <div class="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-white mb-1">{{ doc.doc_name }}</div>
+                            {% if doc.instructions %}
+                            <p class="text-sm text-slate-400 mb-2">{{ doc.instructions }}</p>
+                            {% endif %}
+                            <div class="text-xs text-slate-500">Requested {{ doc.created_at|date:"M d, Y" }}</div>
+                        </div>
+                        {% if doc.resolved %}
+                        <span class="badge bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs px-2 py-1">Received</span>
+                        {% else %}
+                        <form action="{% url 'staff:resolve_doc' doc.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs transition-colors">
+                                Mark Received
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
-                <p class="timeline-description">{{ history.description }}</p>
-                <span class="timeline-meta">{{ history.created_at|date:"M d, Y H:i" }}</span>
-            </li>
-            {% endfor %}
-        </ul>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
     </div>
 </div>
 {% endblock %}
