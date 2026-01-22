@@ -14,6 +14,8 @@ from core.models import User
 from requests_unified.models import (
     Request, StatusHistory, Notification, ApprovalLog, Comment
 )
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 # BSSEF25T9-66 HOD Approve/Reject
 # BSSEF25T9-161 Lecturer Approve/Reject
@@ -190,6 +192,9 @@ def reject_request(request: HttpRequest, request_id: int) -> HttpResponse:
         return redirect("lecturers:dashboard")
     
     return redirect("lecturers:request_detail", request_id=request_id)
+
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 # BSSEF25T9-66 HOD Approve/Reject
 # BSSEF25T9-161 Lecturer Approve/Reject
