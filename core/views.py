@@ -127,6 +127,7 @@ def signup(request: HttpRequest) -> HttpResponse:
     return render(request, "core/signup.html", {"form_data": form_data, "degrees": degrees})
 
 
+
 def home(request: HttpRequest) -> HttpResponse:
     """Homepage / landing page."""
     if request.user.is_authenticated:
@@ -221,6 +222,9 @@ def signup(request: HttpRequest) -> HttpResponse:
     
     return render(request, "core/signup.html", {"form_data": form_data})
 
+
+
+# BSSEF25T9-56: Log Out (link existing implementation)
 
 def logout_view(request: HttpRequest) -> HttpResponse:
     """Log out the user."""
