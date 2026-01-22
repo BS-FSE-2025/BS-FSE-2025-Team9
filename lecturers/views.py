@@ -1,6 +1,8 @@
 """
 Lecturer views - Review requests, approve/reject, add feedback, mark as needs info.
 """
+# BSSEF25T9-162: Decision comments/feedback handled in approve/reject/needs-info/forward endpoints.
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
@@ -12,6 +14,8 @@ from core.models import User
 from requests_unified.models import (
     Request, StatusHistory, Notification, ApprovalLog, Comment
 )
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 # BSSEF25T9-66 HOD Approve/Reject
 # BSSEF25T9-161 Lecturer Approve/Reject
@@ -188,6 +192,9 @@ def reject_request(request: HttpRequest, request_id: int) -> HttpResponse:
         return redirect("lecturers:dashboard")
     
     return redirect("lecturers:request_detail", request_id=request_id)
+
+# BSSEF25T9-66 HOD Approve/Reject
+# BSSEF25T9-161 Lecturer Approve/Reject
 
 # BSSEF25T9-66 HOD Approve/Reject
 # BSSEF25T9-161 Lecturer Approve/Reject
