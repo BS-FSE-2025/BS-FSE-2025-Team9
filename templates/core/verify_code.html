@@ -1,218 +1,154 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Code - SCE Portal</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+    <title>Verify Code - SCE Request Portal</title>
     <style>
-        [data-theme="dark"] {
-            --b1: 15 23 42;
-            --b2: 30 41 59;
-            --b3: 51 65 85;
-            --bc: 241 245 249;
-            --p: 99 102 241;
-            --pf: 79 70 229;
-            --pc: 255 255 255;
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
         }
         
-        .hero-gradient {
-            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
+        .verify-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
         }
         
-        .gradient-text {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .verify-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .verify-header h1 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .verify-header p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .email-display {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
         }
         
         .code-input {
-            letter-spacing: 1em;
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
             text-align: center;
-            font-family: monospace;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
         }
         
         .code-input:focus {
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            outline: none;
+            border-color: var(--primary-color);
         }
         
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1); opacity: 0.3; }
-            100% { transform: scale(0.8); opacity: 0.5; }
+        .btn-verify {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
         }
         
-        .pulse-ring {
-            animation: pulse-ring 2s ease-in-out infinite;
+        .btn-verify:hover {
+            background: var(--primary-dark);
         }
         
-        /* Override btn-primary with dark theme colors */
-        .btn-primary {
-            background-color: rgb(30, 41, 59) !important;
-            border: 1px solid rgba(148, 163, 184, 0.15) !important;
-            color: rgb(226, 232, 240) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
         
-        .btn-primary:hover {
-            background-color: rgb(51, 65, 85) !important;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
         }
         
-        .btn-primary:focus {
-            background-color: rgb(51, 65, 85) !important;
-            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15) !important;
+        .back-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
         }
         
-        /* Override btn-ghost to remove pink/accent colors */
-        .btn-ghost {
-            color: rgb(148, 163, 184) !important;
-        }
-        
-        .btn-ghost:hover {
-            background-color: rgba(51, 65, 85, 0.5) !important;
-            color: rgb(226, 232, 240) !important;
-        }
-        
-        /* Override btn-outline to remove pink/accent colors */
-        .btn-outline {
-            border-color: rgb(71, 85, 105) !important;
-            color: rgb(148, 163, 184) !important;
-            background-color: transparent !important;
-        }
-        
-        .btn-outline:hover {
-            background-color: rgb(51, 65, 85) !important;
-            border-color: rgb(100, 116, 139) !important;
-            color: rgb(226, 232, 240) !important;
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-950 font-sans antialiased flex items-center justify-center p-4">
-    <!-- Background -->
-    <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
-    <div class="fixed inset-0 grid-bg pointer-events-none"></div>
-    
-    <div class="w-full max-w-md relative z-10">
-        <!-- Logo -->
-        <div data-aos="fade-down" class="text-center mb-8">
-            <a href="{% url 'core:home' %}" class="inline-flex items-center gap-2 text-2xl font-bold">
-                <span class="gradient-text">SCE</span>
-                <span class="text-slate-300 font-light">Portal</span>
-            </a>
+<body>
+    <div class="verify-container">
+        <div class="verify-icon">🔐</div>
+        <div class="verify-header">
+            <h1>Enter Verification Code</h1>
+            <p>We sent a 6-digit code to:</p>
+            <span class="email-display">{{ email }}</span>
         </div>
         
-        <!-- Card -->
-        <div data-aos="fade-up" data-aos-delay="100" class="glass rounded-3xl p-8 shadow-2xl">
-            <!-- Icon -->
-            <div class="flex justify-center mb-6">
-                <div class="relative">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
-                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <div class="absolute inset-0 rounded-2xl bg-indigo-500/20 pulse-ring"></div>
-                </div>
-            </div>
-            
-            <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-white mb-2">Check your email</h1>
-                <p class="text-slate-400">
-                    We sent a verification code to<br>
-                    <span class="text-indigo-400 font-medium">{{ email }}</span>
-                </p>
-            </div>
-            
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-warning{% endif %} mb-6 rounded-xl">
-                <span>{{ message }}</span>
-            </div>
-            {% endfor %}
-            {% endif %}
-            
-            <form method="post" class="space-y-6">
-                {% csrf_token %}
-                
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text text-slate-300 font-medium">Verification Code</span>
-                    </label>
-                    <input type="text" name="code" placeholder="000000" 
-                           maxlength="6" pattern="\d{6}"
-                           class="input input-bordered input-lg bg-slate-800/50 border-slate-700 focus:border-indigo-500 code-input w-full text-2xl" 
-                           required autofocus>
-                    <label class="label">
-                        <span class="label-text-alt text-slate-500">Enter the 6-digit code</span>
-                    </label>
-                </div>
-                
-                <button type="submit" class="btn btn-primary w-full">
-                    Verify Code
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </button>
-            </form>
-            
-            <div class="divider text-slate-600 text-sm my-6">OR</div>
-            
-            <div class="text-center">
-                <a href="{% url 'core:login' %}" class="btn btn-ghost btn-sm text-slate-400 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to login
-                </a>
-            </div>
-        </div>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         
-        <!-- Help text -->
-        <div data-aos="fade-up" data-aos-delay="200" class="text-center mt-6">
-            <p class="text-slate-500 text-sm">
-                Didn't receive the code? Check your spam folder or 
-                <a href="{% url 'core:login' %}" class="text-indigo-400 hover:text-indigo-300">try again</a>
-            </p>
-        </div>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <input type="text" name="code" class="code-input" maxlength="6" placeholder="000000" pattern="[0-9]{6}" required autofocus>
+            </div>
+            
+            <button type="submit" class="btn-verify">Verify</button>
+        </form>
+        
+        <a href="{% url 'core:login' %}" class="back-link">← Back to login</a>
     </div>
-    
-    <script>
-        AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true });
-        
-        // Auto-focus and format code input
-        const codeInput = document.querySelector('input[name="code"]');
-        if (codeInput) {
-            codeInput.addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
-            });
-        }
-    </script>
 </body>
 </html>
