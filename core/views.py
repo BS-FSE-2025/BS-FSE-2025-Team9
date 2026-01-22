@@ -224,8 +224,6 @@ def signup(request: HttpRequest) -> HttpResponse:
 
 
 
-# BSSEF25T9-56: Log Out (link existing implementation)
-
 def logout_view(request: HttpRequest) -> HttpResponse:
     """Log out the user."""
     logout(request)
