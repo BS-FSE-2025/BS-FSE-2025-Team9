@@ -1,30 +1,79 @@
-# Request Management System - Department Head Module
+# Student Forms Request Management System
 
-A comprehensive request management system with Department Head functionality for viewing, approving, and managing student requests.
+A comprehensive web-based request management system designed to digitize and automate student academic and administrative requests, enabling efficient submission, tracking, review, and approval by all academic roles.
+## Features
+
+### Project Description
+The Student Forms Request Management System replaces manual, paper-based student forms with a centralized digital platform.
+It allows students to submit requests online and enables academic secretaries, lecturers, and department heads to review, process, and approve requests through a structured workflow with full transparency and notifications.
+
+ **User Roles & Functionalities**
+ 
+  ## User Roles & Functionalities
+   **Student**
+   -Secure login and logout
+   -Submit new requests with attachments
+   -Track request status in real time
+   -View request history and staff notes
+   -Receive notifications for every status update
+
+   **Academic Secretary**
+   -View assigned student requests
+   -Review and validate submitted documents
+   -Add notes or request additional documents
+   -Update request status
+   -Forward requests to lecturers or department heads
+
+   **Lecturer**
+   -View requests related to their courses
+   -Review academic details
+   -Add professional comments or recommendations
+   -Forward reviewed requests for final approval
+
+   **Head of Department**
+
+   -View all pending approval requests
+   -Filter requests by date and type
+   -Approve or reject requests
+   -Add final notes visible to students
+   -Monitor request statistics and processing performance
 
 ## Features
 
-### Department Head Features
+**System Features**
+ 
+ 1. **Authentication & Security**
+ -Secure login/logout system
+ -Role-Based Access Control (RBAC)
+ -Session-based authentication
+ -Protected API endpoints
 
-1. **View Pending Requests**
-   - Fetch and display all pending approval requests
-   - Filter by date range (from/to dates)
-   - Filter by request type (Study Approval, Appeal, Postponement, General)
-   - Enforce approval-only visibility (only pending requests visible)
-   - Real-time request loading with loading indicators
+ 2. **Digital Request Submission**
+ -Multiple request types:
+ -Study Approval
+ -Appeal
+ -Postponement
+ -General Request
+ -File upload and document management
+ -Input validation
 
-2. **Approve/Reject Requests**
-   - Approve or reject pending requests
-   - Add notes during approval/rejection
-   - Automatic status updates
-   - Approval action logging
-   - Automatic notification to students
+ 3. **Request Processing Workflow**
+ -Multi-role approval flow
+ -Automatic status updates
+ -Request forwarding between roles
+ -Full request history tracking
 
-3. **Add Final Notes**
-   - Add final notes that are visible to students
-   - Notes are saved to request record
-   - Notes displayed in student view
-   - Notification sent to student when notes are added
+ 4. **Notification System**
+ -Submission confirmation
+ -Status change notifications
+ -Approval/rejection alerts
+ -Final notes notifications
+
+ 5. **Dashboards & Management**
+ -Student dashboard with request summary
+ -Staff and lecturer request management views
+ -Department head analytics and statistics
+ -Exportable reports (future support)
 
 ## Installation
 
@@ -41,8 +90,9 @@ python app.py
 3. Access the application:
    - Open your browser and navigate to `http://localhost:5000`
    - Use the quick login buttons or login with credentials:
-     - Email: `head@example.com`
-     - Password: `password`
+     - Email: `admin@ac.sce.ac.il`
+     - Password: `admin`
+     - If login is made via this email address, a password will be sent to the email address of a member of the development team.
 
 ## Quick Login
 
@@ -90,9 +140,9 @@ The system includes sample data that is automatically created on first run:
 
 ## Technologies Used
 
-- **Backend**: Flask (Python)
-- **Database**: SQLite with SQLAlchemy ORM
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Backend**: Python,Django
+- **Database**: Python
+- **Frontend**: HTML5, CSS3 ,Django
 - **Styling**: Modern CSS with CSS Variables
 
 ## Browser Support

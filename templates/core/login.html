@@ -1,262 +1,212 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - SCE Portal</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+    <title>Login - SCE Request Portal</title>
     <style>
-        [data-theme="dark"] {
-            --b1: 15 23 42;
-            --b2: 30 41 59;
-            --b3: 51 65 85;
-            --bc: 241 245 249;
-            --p: 99 102 241;
-            --pf: 79 70 229;
-            --pc: 255 255 255;
-            --s: 100 116 139;
-            --sf: 71 85 105;
-            --a: 129 140 248;
-            --af: 99 102 241;
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
         }
         
-        .hero-gradient {
-            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                        radial-gradient(ellipse at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
         
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
         }
         
-        .gradient-text {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
         }
         
-        .input-glow:focus {
+        .back-link:hover {
+            color: #f1f5f9;
+        }
+        
+        .login-container {
+            background: linear-gradient(145deg, #1e1e2e, #252535);
+            border: 1px solid #2d2d3d;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header h1 {
+            color: #f1f5f9;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: #94a3b8;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: #0f0f17;
+            border: 1px solid #2d2d3d;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #f1f5f9;
+            transition: all 0.2s;
+        }
+        
+        .form-control::placeholder {
+            color: #64748b;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .float { animation: float 4s ease-in-out infinite; }
-        
-        @keyframes breathe {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.02); }
-        }
-        .breathe { animation: breathe 4s ease-in-out infinite; }
-        
-        .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(99, 102, 241, 0.3);
-            border-radius: 50%;
-            animation: particle-float 15s infinite linear;
-        }
-        @keyframes particle-float {
-            0% { transform: translateY(100vh); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         
-        .btn-ripple { position: relative; overflow: hidden; }
-        .btn-ripple::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.1) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .btn-ripple:hover::after { opacity: 1; }
-        
-        /* Subtle focus ring */
-        .btn:focus-visible {
-            outline: 2px solid rgba(99, 102, 241, 0.4);
-            outline-offset: 2px;
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
         }
         
-        /* Override btn-primary with dark theme colors */
-        .btn-primary {
-            background-color: rgb(30, 41, 59) !important;
-            border: 1px solid rgba(148, 163, 184, 0.15) !important;
-            color: rgb(226, 232, 240) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
         
-        .btn-primary:hover {
-            background-color: rgb(51, 65, 85) !important;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        .alert-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
         
-        .btn-primary:focus {
-            background-color: rgb(51, 65, 85) !important;
-            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15) !important;
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
-        /* Override btn-ghost to remove pink/accent colors */
-        .btn-ghost {
-            color: rgb(148, 163, 184) !important;
+        .info-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #2d2d3d;
+            color: #94a3b8;
+            font-size: 0.9rem;
         }
         
-        .btn-ghost:hover {
-            background-color: rgba(51, 65, 85, 0.5) !important;
-            color: rgb(226, 232, 240) !important;
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
         }
         
-        /* Override btn-outline to remove pink/accent colors */
-        .btn-outline {
-            border-color: rgb(71, 85, 105) !important;
-            color: rgb(148, 163, 184) !important;
-            background-color: transparent !important;
+        .signup-link a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
         }
         
-        .btn-outline:hover {
-            background-color: rgb(51, 65, 85) !important;
-            border-color: rgb(100, 116, 139) !important;
-            color: rgb(226, 232, 240) !important;
+        .signup-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-950 font-sans antialiased flex items-center justify-center p-4">
-    <!-- Background -->
-    <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
-    <div class="fixed inset-0 grid-bg pointer-events-none"></div>
-    
-    <!-- Ambient glow -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden">
-        <div class="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl breathe"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl breathe" style="animation-delay: -2s;"></div>
-    </div>
-    
-    <!-- Floating particles -->
-    <div class="particles">
-        <div class="particle" style="left: 20%; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 40%; animation-delay: 4s;"></div>
-        <div class="particle" style="left: 60%; animation-delay: 8s;"></div>
-        <div class="particle" style="left: 80%; animation-delay: 12s;"></div>
-    </div>
-    
-    <!-- Back to home -->
-    <a href="{% url 'core:home' %}" class="fixed top-6 left-6 btn btn-ghost btn-sm gap-2 text-slate-400 hover:text-white z-10">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        Back
-    </a>
-    
-    <div class="w-full max-w-md relative z-10">
-        <!-- Logo -->
-        <div data-aos="fade-down" class="text-center mb-8">
-            <a href="{% url 'core:home' %}" class="inline-flex items-center gap-2 text-2xl font-bold">
-                <span class="gradient-text">SCE</span>
-                <span class="text-slate-300 font-light">Portal</span>
-            </a>
-        </div>
+<body>
+    <div class="login-wrapper">
+        <a href="{% url 'core:home' %}" class="back-link">
+            ← Back to Home
+        </a>
         
-        <!-- Card -->
-        <div data-aos="fade-up" data-aos-delay="100" class="glass rounded-3xl p-8 shadow-2xl">
-            <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-white mb-2">Welcome back</h1>
-                <p class="text-slate-400">Sign in to your account</p>
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🎓 SCE Request Portal</h1>
+                <p>Sign in with your SCE email</p>
             </div>
-            
-            {% if error %}
-            <div class="alert alert-error mb-6 rounded-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ error }}</span>
-            </div>
-            {% endif %}
             
             {% if messages %}
             {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-info{% else %}alert-warning{% endif %} mb-6 rounded-xl">
-                <span>{{ message }}</span>
-            </div>
+            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
             {% endfor %}
             {% endif %}
             
-            <form method="post" class="space-y-5">
+            <form method="post">
                 {% csrf_token %}
                 
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text text-slate-300 font-medium">Email</span>
-                    </label>
-                    <input type="email" name="email" placeholder="you@sce.ac.il" 
-                           class="input input-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 input-glow w-full" 
-                           required>
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@sce.ac.il" required>
                 </div>
                 
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text text-slate-300 font-medium">Password</span>
-                    </label>
-                    <input type="password" name="password" placeholder="••••••••" 
-                           class="input input-bordered bg-slate-800/50 border-slate-700 focus:border-indigo-500 input-glow w-full" 
-                           required>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary w-full mt-6 btn-ripple group">
-                    Sign In
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                </button>
+                <button type="submit" class="btn-login">Sign In</button>
             </form>
             
-            <div class="mt-6 text-center">
-                <p class="text-slate-500 text-sm">
-                    A verification code will be sent to your email
-                </p>
+            <p class="info-text">
+                🔐 A verification code will be sent to your email for security.
+            </p>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="{% url 'core:signup' %}">Create one here</a>
             </div>
         </div>
-        
-        <!-- Sign up link -->
-        <div data-aos="fade-up" data-aos-delay="200" class="text-center mt-6">
-            <p class="text-slate-400">
-                Don't have an account? 
-                <a href="{% url 'core:signup' %}" class="text-indigo-400 hover:text-indigo-300 font-medium">
-                    Create account
-                </a>
-            </p>
-        </div>
     </div>
-    
-    <script>
-        AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true });
-    </script>
 </body>
 </html>

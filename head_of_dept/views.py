@@ -37,7 +37,7 @@ def hod_required_api(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-
+# BSSEF25T9-65: HOD – View Pending Requests (existing dashboard/api_pending_requests)
 @login_required
 @hod_required
 def dashboard(request: HttpRequest) -> HttpResponse:
@@ -251,7 +251,7 @@ def reject_request(request: HttpRequest, request_id: int) -> HttpResponse:
     
     return redirect("head_of_dept:request_detail", request_id=request_id)
 
-
+# BSSEF25T9-67: HOD – Add final notes visible to student (existing add_final_notes)
 @login_required
 @hod_required
 def add_final_notes(request: HttpRequest, request_id: int) -> HttpResponse:
